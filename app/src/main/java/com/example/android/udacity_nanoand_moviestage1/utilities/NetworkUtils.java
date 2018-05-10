@@ -10,21 +10,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-/**
- * Created by gizzo_000 on 5/6/2018.
- */
 
 public class NetworkUtils {
     private static final String MOVIE_BASE_URL =
             "http://image.tmdb.org/t/p/";
     private static final String MOVIE_POPULAR_BASE_URL=
             "http://api.themoviedb.org/3/movie/popular";
-    //https://api.themoviedb.org/3/movie/popular?api_key=6f2eaad04461c003be663d1405d29a95&language=en-US&page=1
 
     private static final String MOVIE_TOPRATED_BASE_URL=
             "http://api.themoviedb.org/3/movie/top_rated";
 
-    private static final String APIKEY = "6f2eaad04461c003be663d1405d29a95";
+    private static final String APIKEY = "@keys/themoviedb_apikey";//
     //http://api.themoviedb.org/3/movie/popular?api_key=[YOUR_API_KEY]
 
     private static final String APIKEY_PARAM = "api_key";
