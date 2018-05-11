@@ -1,5 +1,6 @@
 package com.example.android.udacity_nanoand_moviestage1;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Get ImageView on main screen (activity_main)
-        poster_iv = (ImageView) findViewById(R.id.poster_iv);
+        poster_iv =  findViewById(R.id.poster_iv);
         //Load an image into it
         Picasso.with(this).load("http://i.imgur.com/DvpvklR.png").into(poster_iv);
         //////
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public Loader<String> onCreateLoader(int i, Bundle bundle) {
+    public @NonNull Loader<String> onCreateLoader(int i, Bundle bundle) {
         //Start the loader in the backgroun
         Log.i("GREGOUT", "onCreateLoader:************* ");
         return new AsyncTaskLoader<String>(this ) {
@@ -49,10 +50,9 @@ public class MainActivity extends AppCompatActivity
                 URL moviePopularURL = NetworkUtils.buildPopularURL();
                 Log.i("GREGOUT", "#####  loadInBackground: ##### url = "+ moviePopularURL.toString());
                 try {
-                    String jsonMovieData = NetworkUtils
-                            .getResponseFromHttpUrl(moviePopularURL);
 
-                    return jsonMovieData;
+                    return NetworkUtils
+                            .getResponseFromHttpUrl(moviePopularURL);
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -75,13 +75,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoadFinished(Loader<String> loader, String s) {
+    public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         //When loader is done, deal with results
-        Log.i("GREGOUT", "onLoadFinished: ***" +s+ "***");
+        Log.i("GREGOUT", "!!!! WOOT !!!! onLoadFinished: ***" +s+ "***");
     }
 
     @Override
-    public void onLoaderReset(Loader<String> loader) {
+    public void onLoaderReset(@NonNull Loader<String> loader) {
         Log.i("GREGOUT", "onLoaderReset: ******************* ");
     }
 
