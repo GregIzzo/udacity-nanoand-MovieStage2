@@ -1,5 +1,6 @@
 package com.example.android.udacity_nanoand_moviestage1;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -13,17 +14,24 @@ import android.widget.ImageView;
 import com.example.android.udacity_nanoand_moviestage1.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<String> {
     ImageView poster_iv;
-
+    Context mainContext;
     public static final int MOVIE_LOADER_ID= 22;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Setup NetworkUtils with context so it can read the api key from res/values/keys.xml
+        NetworkUtils.setup(this);
+        mainContext = this;
         setContentView(R.layout.activity_main);
         //Get ImageView on main screen (activity_main)
         poster_iv =  findViewById(R.id.poster_iv);
@@ -48,11 +56,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public String loadInBackground() {
                 URL moviePopularURL = NetworkUtils.buildPopularURL();
-                Log.i("GREGOUT", "#####  loadInBackground: ##### url = "+ moviePopularURL.toString());
+                URL movieTopRatedURL = NetworkUtils.buildTopRatedURL();
+                Log.i("GREGOUT", "#####  loadInBackground: ##### url = "+ movieTopRatedURL.toString());
                 try {
-
+                    //return NetworkUtils
+                    //        .getResponseFromHttpUrl(moviePopularURL);
                     return NetworkUtils
-                            .getResponseFromHttpUrl(moviePopularURL);
+                            .getResponseFromHttpUrl(movieTopRatedURL);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -69,6 +80,28 @@ public class MainActivity extends AppCompatActivity
             }
             public void deliverResult(String data) {
                 mMovieData = data;
+                //Turn it to a json object:
+                try {
+                    JSONObject reader = new JSONObject(mMovieData);
+                    JSONArray resArray = reader.getJSONArray("results");
+                    Log.i("GREGOUT","=== COUNT = "+resArray.length());
+                    //Load image from first object:
+
+                    for (int i = 0; i < resArray.length(); i++) {
+                        JSONObject d = resArray.getJSONObject(i);
+                        Log.i("GREGOUT", "title:"+d.getString("title")+" popularity: "+d.getString("popularity")+" vote ave:"+d.getString("vote_average"));
+                        if (i == 0){
+                            JSONObject firstObj = resArray.getJSONObject(i);
+                            String posterPath = firstObj.getString("poster_path");
+                            String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
+                            Picasso.with(mainContext).load(imurl).into(poster_iv);
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 super.deliverResult(data);
             }
         };
