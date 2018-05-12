@@ -23,6 +23,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<String> {
     ImageView poster_iv;
+    ImageView poster2_iv;
     Context mainContext;
     public static final int MOVIE_LOADER_ID= 22;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         //Get ImageView on main screen (activity_main)
         poster_iv =  findViewById(R.id.poster_iv);
+        poster2_iv = findViewById(R.id.poster_iv2);
         //Load an image into it
         Picasso.with(this).load("http://i.imgur.com/DvpvklR.png").into(poster_iv);
         //////
@@ -95,6 +97,12 @@ public class MainActivity extends AppCompatActivity
                             String posterPath = firstObj.getString("poster_path");
                             String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
                             Picasso.with(mainContext).load(imurl).into(poster_iv);
+                        }
+                        if (i == 1){
+                            JSONObject firstObj = resArray.getJSONObject(i);
+                            String posterPath = firstObj.getString("poster_path");
+                            String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
+                            Picasso.with(mainContext).load(imurl).into(poster2_iv);
                         }
 
                     }

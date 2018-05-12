@@ -9,13 +9,23 @@
 
     <ImageView
         android:id="@+id/poster_iv"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-android:contentDescription="MyImage"
+        android:contentDescription="MyImage"
 
 
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"  />
 
+    <ImageView
+        android:id="@+id/poster_iv2"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="Image"
+
+
+        android:layout_alignParentTop="true"
+        app:layout_constraintLeft_toRightOf="@id/poster_iv"
+        android:layout_centerHorizontal="true"  />
 
 </android.support.constraint.ConstraintLayout>
