@@ -8,7 +8,10 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.example.android.udacity_nanoand_moviestage1.utilities.NetworkUtils;
@@ -21,11 +24,14 @@ import org.json.JSONObject;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderCallbacks<String> {
+        implements LoaderCallbacks<String>, MovieRecyclerAdapter.MovieAdapterOnClickHandler {
     ImageView poster_iv;
     ImageView poster2_iv;
     Context mainContext;
+    String mMovieData = null;
     public static final int MOVIE_LOADER_ID= 22;
+    RecyclerView mRecyclerView;
+    MovieRecyclerAdapter movieRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +41,20 @@ public class MainActivity extends AppCompatActivity
         mainContext = this;
         setContentView(R.layout.activity_main);
         //Get ImageView on main screen (activity_main)
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
+
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        movieRecyclerAdapter = new MovieRecyclerAdapter(this );
+
+        /* Setting the adapter attaches it to the RecyclerView in our layout. */
+        mRecyclerView.setAdapter(movieRecyclerAdapter);
+
+
         poster_iv =  findViewById(R.id.poster_iv);
-        poster2_iv = findViewById(R.id.poster_iv2);
+       // poster2_iv = findViewById(R.id.poster_iv2);
         //Load an image into it
         Picasso.with(this).load("http://i.imgur.com/DvpvklR.png").into(poster_iv);
         //////
@@ -50,10 +68,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public @NonNull Loader<String> onCreateLoader(int i, Bundle bundle) {
-        //Start the loader in the backgroun
+        //Start the loader in the background
         Log.i("GREGOUT", "onCreateLoader:************* ");
         return new AsyncTaskLoader<String>(this ) {
-            String mMovieData = null;
+           // String mMovieData = null;
 
             @Override
             public String loadInBackground() {
@@ -88,7 +106,7 @@ public class MainActivity extends AppCompatActivity
                     JSONArray resArray = reader.getJSONArray("results");
                     Log.i("GREGOUT","=== COUNT = "+resArray.length());
                     //Load image from first object:
-
+ /*
                     for (int i = 0; i < resArray.length(); i++) {
                         JSONObject d = resArray.getJSONObject(i);
                         Log.i("GREGOUT", "title:"+d.getString("title")+" popularity: "+d.getString("popularity")+" vote ave:"+d.getString("vote_average"));
@@ -98,6 +116,7 @@ public class MainActivity extends AppCompatActivity
                             String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
                             Picasso.with(mainContext).load(imurl).into(poster_iv);
                         }
+
                         if (i == 1){
                             JSONObject firstObj = resArray.getJSONObject(i);
                             String posterPath = firstObj.getString("poster_path");
@@ -105,7 +124,9 @@ public class MainActivity extends AppCompatActivity
                             Picasso.with(mainContext).load(imurl).into(poster2_iv);
                         }
 
+
                     }
+                    */
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -119,6 +140,8 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         //When loader is done, deal with results
         Log.i("GREGOUT", "!!!! WOOT !!!! onLoadFinished: ***" +s+ "***");
+        movieRecyclerAdapter.setMovieData(s);
+        showMovieDataView();
     }
 
     @Override
@@ -144,4 +167,17 @@ public class MainActivity extends AppCompatActivity
             loaderManager.restartLoader(MOVIE_LOADER_ID, queryBundle, this);
         }
     }
+
+    @Override
+    public void onClick(String movieData) {
+        Log.i("TAG", "######onClick: "+movieData);
+    }
+
+    private void showMovieDataView() {
+        /* First, make sure the error is invisible */
+       // mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        /* Then, make sure the weather data is visible */
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
 }
