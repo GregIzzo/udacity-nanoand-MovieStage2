@@ -1,6 +1,8 @@
 package com.example.android.udacity_nanoand_moviestage1;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity
         mainContext = this;
         setContentView(R.layout.activity_main);
         //Get ImageView on main screen (activity_main)
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
+        mRecyclerView =  findViewById(R.id.rv_movies);
 
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -54,10 +56,6 @@ public class MainActivity extends AppCompatActivity
 
 
         poster_iv =  findViewById(R.id.poster_iv);
-       // poster2_iv = findViewById(R.id.poster_iv2);
-        //Load an image into it
-        Picasso.with(this).load("http://i.imgur.com/DvpvklR.png").into(poster_iv);
-        //////
         // LoaderCallbacks<String[]> callback = MainActivity.this;
         LoaderCallbacks<String> callbacks = MainActivity.this;
         Log.i("GREGOUT", "onCreate: ---STARTING");
@@ -169,8 +167,33 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(String movieData) {
+    public void onClick(String movieData) throws JSONException {
         Log.i("TAG", "######onClick: "+movieData);
+        Intent movieDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        //Movie details layout contains
+        // //title,
+        // //release date,
+        // //movie poster,
+        // //vote average, and
+        // //plot synopsis.
+        /*
+        "title": "Dilwale Dulhania Le Jayenge",
+        "release_date": "1995-10-20"
+        "poster_path": "\/uC6TTUhPpQCmgldGyYveKRAu8JN.jpg",
+        "vote_average": 9.2,
+		"popularity": 15.778658,
+		"overview": "Raj is a rich, caref..."
+
+         */
+        JSONObject reader = new JSONObject(movieData);
+        movieDetailIntent.putExtra("title",reader.getString("title") );
+        movieDetailIntent.putExtra("release_date",reader.getString("release_date") );
+        movieDetailIntent.putExtra("poster_path",reader.getString("poster_path") );
+        movieDetailIntent.putExtra("vote_average",reader.getDouble("vote_average") );
+        movieDetailIntent.putExtra("popularity",reader.getDouble("popularity") );
+        movieDetailIntent.putExtra("overview",reader.getString("overview") );
+        startActivity(movieDetailIntent);
+
     }
 
     private void showMovieDataView() {

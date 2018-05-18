@@ -31,7 +31,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
   private  JSONArray resArray=null;
 
     public interface MovieAdapterOnClickHandler {
-        void onClick(String movieData);
+        void onClick(String movieData) throws JSONException;
     }
     /*
      * Constructor for MovieRecyclerAdapter - accepts number of items to display
@@ -48,7 +48,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
 
         public MovieAdapterViewHolder( View itemView) {
             super(itemView);
-            listItemMovieView = (ImageView) itemView.findViewById(R.id.iv_item_movie);
+            listItemMovieView =  itemView.findViewById(R.id.iv_item_movie);
             Log.i(TAG, " $$$$ class MovieAdapterViewHolder - listItemMovieView = " +listItemMovieView);
             itemView.setOnClickListener(this);
         }
@@ -56,9 +56,21 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            String retString = "a";
-            Log.i(TAG, "^^^^^^^^^^onClick: ");
-            mClickHandler.onClick(retString);
+            JSONObject jObj = null;
+            Log.i(TAG, "^^^^^^^^^^onClick: "+ adapterPosition);
+
+             if (resArray != null){
+                 try {
+                      jObj = resArray.getJSONObject(adapterPosition);
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                 }
+             }
+            try {
+                mClickHandler.onClick(jObj.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -74,8 +86,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        MovieAdapterViewHolder viewHolder = new MovieAdapterViewHolder(view);
-        return viewHolder;
+        return new MovieAdapterViewHolder(view);
     }
     /**
      * OnBindViewHolder is called by RecyclerView to display the data at the specified
