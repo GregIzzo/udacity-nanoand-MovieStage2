@@ -10,6 +10,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,8 +28,8 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<String>, MovieRecyclerAdapter.MovieAdapterOnClickHandler {
-    ImageView poster_iv;
-    ImageView poster2_iv;
+   // ImageView poster_iv;
+   // ImageView poster2_iv;
     Context mainContext;
     String mMovieData = null;
     public static final int MOVIE_LOADER_ID= 22;
@@ -45,9 +46,12 @@ public class MainActivity extends AppCompatActivity
         //Get ImageView on main screen (activity_main)
         mRecyclerView =  findViewById(R.id.rv_movies);
 
-        LinearLayoutManager layoutManager
-                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
+      //  LinearLayoutManager layoutManager
+      //          = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         movieRecyclerAdapter = new MovieRecyclerAdapter(this );
 
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setAdapter(movieRecyclerAdapter);
 
 
-        poster_iv =  findViewById(R.id.poster_iv);
+       // poster_iv =  findViewById(R.id.poster_iv);
         // LoaderCallbacks<String[]> callback = MainActivity.this;
         LoaderCallbacks<String> callbacks = MainActivity.this;
         Log.i("GREGOUT", "onCreate: ---STARTING");
@@ -188,7 +192,7 @@ public class MainActivity extends AppCompatActivity
         JSONObject reader = new JSONObject(movieData);
         movieDetailIntent.putExtra("title",reader.getString("title") );
         movieDetailIntent.putExtra("release_date",reader.getString("release_date") );
-        movieDetailIntent.putExtra("poster_path",reader.getString("poster_path") );
+        movieDetailIntent.putExtra("backdrop_path",reader.getString("backdrop_path") );
         movieDetailIntent.putExtra("vote_average",reader.getDouble("vote_average") );
         movieDetailIntent.putExtra("popularity",reader.getDouble("popularity") );
         movieDetailIntent.putExtra("overview",reader.getString("overview") );

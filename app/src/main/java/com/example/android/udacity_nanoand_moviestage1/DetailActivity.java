@@ -16,9 +16,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
+        setTitle(intent.getStringExtra("title"));
         Context context = getBaseContext();
-        String posterPath = intent.getStringExtra("poster_path");
-        String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
+        String posterPath = intent.getStringExtra("backdrop_path");
+        String imurl = "https://image.tmdb.org/t/p/w780" + posterPath;
         ImageView posterImageView =  findViewById(R.id.poster_iv);
         Picasso.with(context).load(imurl).into(posterImageView);
 
