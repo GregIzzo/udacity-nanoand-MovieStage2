@@ -8,12 +8,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -35,14 +40,26 @@ public class MainActivity extends AppCompatActivity
     public static final int MOVIE_LOADER_ID= 22;
     RecyclerView mRecyclerView;
     MovieRecyclerAdapter movieRecyclerAdapter;
+    private Toolbar mTopToolbar;
+    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Setup NetworkUtils with context so it can read the api key from res/values/keys.xml
-        NetworkUtils.setup(this);
         mainContext = this;
         setContentView(R.layout.activity_main);
+
+        //Setup NetworkUtils with context so it can read the api key from res/values/keys.xml
+        NetworkUtils.setup(this);
+        //Setup Toolbar/Action bar which has a button for changing sort: Popularity vs top_rated
+
+        //Try inflating menu instead of using Toolbar Code
+        // Menu is inflated in the method 'onCreateOptionsMenu'
+
+        mTopToolbar =  findViewById(R.id.action_sort);
+        setSupportActionBar(mTopToolbar);//Creates the toolbar
+        mActionBar =  getSupportActionBar();//need this to process interactions with the bar
+
         //Get ImageView on main screen (activity_main)
         mRecyclerView =  findViewById(R.id.rv_movies);
 
@@ -50,9 +67,7 @@ public class MainActivity extends AppCompatActivity
       //          = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
-
         mRecyclerView.setLayoutManager(mLayoutManager);
-
         movieRecyclerAdapter = new MovieRecyclerAdapter(this );
 
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
@@ -69,10 +84,35 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.i("GGG", "------ ------ ----- onCreateOptionsMenu: ");
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+
+        MenuItem item = menu.findItem(R.id.myswitch);
+        item.setActionView(R.layout.switch_layout);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_sort:
+                Log.i("GGGG", "@@@@@@ onOptionsItemSelected: ");
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public @NonNull Loader<String> onCreateLoader(int i, Bundle bundle) {
         //Start the loader in the background
         Log.i("GREGOUT", "onCreateLoader:************* ");
-        return new AsyncTaskLoader<String>(this ) {
+        return  new AsyncTaskLoader<String>(this ) {
            // String mMovieData = null;
 
             @Override
