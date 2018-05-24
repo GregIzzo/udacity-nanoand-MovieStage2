@@ -6,7 +6,6 @@
         <item
             android:title=""
             android:id="@+id/myswitch"
-
             android:orderInCategory="100"
             tools:context=".MainActivity"
             app:showAsAction="always"

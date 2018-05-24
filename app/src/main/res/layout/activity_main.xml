@@ -7,13 +7,15 @@
     tools:context="com.example.android.udacity_nanoand_moviestage1.MainActivity"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/action_sort"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+<ToggleButton
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/toggle_button"
+    android:text="@string/switch_label"
+    android:textOff="@string/switch_off_text"
+    android:textOn="@string/switch_on_text"
+    />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_movies"

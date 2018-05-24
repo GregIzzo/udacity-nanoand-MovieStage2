@@ -14,13 +14,16 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ToggleButton;
 
 import com.example.android.udacity_nanoand_moviestage1.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -32,33 +35,57 @@ import org.json.JSONObject;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderCallbacks<String>, MovieRecyclerAdapter.MovieAdapterOnClickHandler {
+        implements LoaderCallbacks<String>, MovieRecyclerAdapter.MovieAdapterOnClickHandler, CompoundButton.OnCheckedChangeListener {
    // ImageView poster_iv;
    // ImageView poster2_iv;
-    Context mainContext;
+
     String mMovieData = null;
     public static final int MOVIE_LOADER_ID= 22;
     RecyclerView mRecyclerView;
     MovieRecyclerAdapter movieRecyclerAdapter;
     private Toolbar mTopToolbar;
     private ActionBar mActionBar;
+    boolean sortByPopular = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mainContext = this;
+
         setContentView(R.layout.activity_main);
 
         //Setup NetworkUtils with context so it can read the api key from res/values/keys.xml
         NetworkUtils.setup(this);
         //Setup Toolbar/Action bar which has a button for changing sort: Popularity vs top_rated
 
-        //Try inflating menu instead of using Toolbar Code
+
         // Menu is inflated in the method 'onCreateOptionsMenu'
 
-        mTopToolbar =  findViewById(R.id.action_sort);
-        setSupportActionBar(mTopToolbar);//Creates the toolbar
-        mActionBar =  getSupportActionBar();//need this to process interactions with the bar
+//        mTopToolbar =  findViewById(R.id.action_sort);
+//        setSupportActionBar(mTopToolbar);//Creates the toolbar
+//       mActionBar =  getSupportActionBar();//need this to process interactions with the bar
+
+
+//       SwitchCompat sortToggle = (SwitchCompat) findViewById(R.id.sortSwitchForActionBar);
+// /       if (sortToggle != null)
+//            sortToggle.setOnCheckedChangeListener(this);
+
+        ToggleButton sortSelectButton = findViewById(R.id.toggle_button);
+        if (sortSelectButton != null) {
+           // sortSelectButton.setOnCheckedChangeListener(this);
+            sortSelectButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i("GGG", "onClick: "+((ToggleButton)view).isChecked());
+                   sortByPopular =  ((ToggleButton)view).isChecked();
+                    mMovieData = null;
+                    invalidateData();
+                   // startMovieDataLoad();
+
+                    getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+                }
+            });
+        }
+
 
         //Get ImageView on main screen (activity_main)
         mRecyclerView =  findViewById(R.id.rv_movies);
@@ -76,29 +103,32 @@ public class MainActivity extends AppCompatActivity
 
        // poster_iv =  findViewById(R.id.poster_iv);
         // LoaderCallbacks<String[]> callback = MainActivity.this;
-        LoaderCallbacks<String> callbacks = MainActivity.this;
+        //LoaderCallbacks<String> callbacks = MainActivity.this;
         Log.i("GREGOUT", "onCreate: ---STARTING");
-        getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, callbacks );
+        getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, MainActivity.this );
 
-        startMovieDataLoad();
+        //startMovieDataLoad();
     }
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i("GGG", "------ ------ ----- onCreateOptionsMenu: ");
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
         MenuItem item = menu.findItem(R.id.myswitch);
         item.setActionView(R.layout.switch_layout);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.i("GGGG", "@@@@@@ onOptionsItemSelected: ");
         switch (item.getItemId()) {
-            case R.id.action_sort:
-                Log.i("GGGG", "@@@@@@ onOptionsItemSelected: ");
+            case R.id.sortSwitchForActionBar://  R.id.action_sort:
+                Log.i("GGGG", "@@@@@@ action_sort ");
                 return true;
 
             default:
@@ -107,26 +137,34 @@ public class MainActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
-
+*/
     @Override
     public @NonNull Loader<String> onCreateLoader(int i, Bundle bundle) {
         //Start the loader in the background
-        Log.i("GREGOUT", "onCreateLoader:************* ");
+        Log.i("GREGOUT", "onCreateLoader:************* sort= "+sortByPopular);
         return  new AsyncTaskLoader<String>(this ) {
            // String mMovieData = null;
 
             @Override
             public String loadInBackground() {
-                URL moviePopularURL = NetworkUtils.buildPopularURL();
-                URL movieTopRatedURL = NetworkUtils.buildTopRatedURL();
-                Log.i("GREGOUT", "#####  loadInBackground: ##### url = "+ movieTopRatedURL.toString());
+                URL searchUrl = null;
+                if (sortByPopular){
+                    searchUrl = NetworkUtils.buildPopularURL();
+
+                } else {
+                    searchUrl = NetworkUtils.buildTopRatedURL();
+                }
+                ///URL moviePopularURL = NetworkUtils.buildPopularURL();
+                ////URL movieTopRatedURL = NetworkUtils.buildTopRatedURL();
+                Log.i("GREGOUT", "#####  loadInBackground: ##### url = "+ searchUrl.toString());
                 try {
                     //return NetworkUtils
                     //        .getResponseFromHttpUrl(moviePopularURL);
                     return NetworkUtils
-                            .getResponseFromHttpUrl(movieTopRatedURL);
+                            .getResponseFromHttpUrl(searchUrl);
 
                 } catch (Exception e) {
+                    Log.i("GREGOUT", "#####  loadInBackgroundERROR: ##### "+ e.getMessage());
                     e.printStackTrace();
                     return null;
                 }
@@ -134,6 +172,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             protected void onStartLoading() {
+                Log.i("GREGOUT", "#####  onStartLoading ##### ");
                 if (mMovieData != null) {
                     deliverResult(mMovieData);
                 } else {
@@ -141,6 +180,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             public void deliverResult(String data) {
+                Log.i("GREGOUT", "#####  deliverResult #####: data.length "+data.length());
                 mMovieData = data;
                 //Turn it to a json object:
                 try {
@@ -148,27 +188,6 @@ public class MainActivity extends AppCompatActivity
                     JSONArray resArray = reader.getJSONArray("results");
                     Log.i("GREGOUT","=== COUNT = "+resArray.length());
                     //Load image from first object:
- /*
-                    for (int i = 0; i < resArray.length(); i++) {
-                        JSONObject d = resArray.getJSONObject(i);
-                        Log.i("GREGOUT", "title:"+d.getString("title")+" popularity: "+d.getString("popularity")+" vote ave:"+d.getString("vote_average"));
-                        if (i == 0){
-                            JSONObject firstObj = resArray.getJSONObject(i);
-                            String posterPath = firstObj.getString("poster_path");
-                            String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
-                            Picasso.with(mainContext).load(imurl).into(poster_iv);
-                        }
-
-                        if (i == 1){
-                            JSONObject firstObj = resArray.getJSONObject(i);
-                            String posterPath = firstObj.getString("poster_path");
-                            String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
-                            Picasso.with(mainContext).load(imurl).into(poster2_iv);
-                        }
-
-
-                    }
-                    */
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -181,7 +200,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         //When loader is done, deal with results
-        Log.i("GREGOUT", "!!!! WOOT !!!! onLoadFinished: ***" +s+ "***");
+        Log.i("GREGOUT", "!!!! WOOOT !!!! onLoadFinished: ***string len=" + s.length()+ "***");
         movieRecyclerAdapter.setMovieData(s);
         showMovieDataView();
     }
@@ -194,7 +213,7 @@ public class MainActivity extends AppCompatActivity
     private void startMovieDataLoad() {
         Log.i("GREGOUT", " ########## startMovieDataLoad: ");
         // Create a bundle called queryBundle
-        Bundle queryBundle = new Bundle();
+        Bundle queryBundle = null;//new Bundle();
         // Use putString with OPERATION_QUERY_URL_EXTRA as the key and the String value of the URL as the value
         //url value here is https://jsonplaceholder.typicode.com/posts
        ///// queryBundle.putString(OPERATION_QUERY_URL_EXTRA,url);
@@ -239,6 +258,10 @@ public class MainActivity extends AppCompatActivity
         startActivity(movieDetailIntent);
 
     }
+    private void invalidateData() {
+        //mRecyclerView.invalidate();
+        movieRecyclerAdapter.setMovieData(null);
+    }
 
     private void showMovieDataView() {
         /* First, make sure the error is invisible */
@@ -247,4 +270,15 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        Log.i("GGG", " ACTION SWITCH CLICKED:" + b+ " button = "+ compoundButton.isChecked());
+        sortByPopular = b;
+        mMovieData = null;
+        invalidateData();
+        //startMovieDataLoad();
+
+        // getSupportLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
+        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+    }
 }

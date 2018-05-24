@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">udacity-nanoand-MovieStage1</string>
     <string name="label_trailer">Trailer</string>
-    <string name="switch_label">Popularity</string>
+    <string name="switch_label">Sort By</string>
+    <string name="switch_on_text">Popularity</string>
+    <string name="switch_off_text">Top Rated</string>
 </resources>
