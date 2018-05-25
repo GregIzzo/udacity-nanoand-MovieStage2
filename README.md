@@ -17,8 +17,9 @@ You will need to signup and then use your account to request an api key. For mor
 This project uses the following API's:
 
 ### themoviedb
-https://www.themoviedb.org/
+https://www.themoviedb.org/  
 https://developers.themoviedb.org/3/getting-started/introduction
+
 
 The Movie Database (TMDb) is a community built movie and TV database. 
 
