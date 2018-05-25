@@ -2,8 +2,8 @@ package com.example.android.udacity_nanoand_moviestage1.utilities;
 
 import android.content.Context;
 import android.net.Uri;
-import android.provider.Settings;
-import android.util.Log;
+//import android.provider.Settings;
+//import android.util.Log;
 
 import com.example.android.udacity_nanoand_moviestage1.R ;
 
@@ -17,8 +17,8 @@ import java.util.Scanner;
 
 
 public class NetworkUtils {
-    private static final String MOVIE_BASE_URL =
-            "http://image.tmdb.org/t/p/";
+    //private static final String MOVIE_BASE_URL =
+   //         "http://image.tmdb.org/t/p/";
     private static final String MOVIE_POPULAR_BASE_URL=
             "http://api.themoviedb.org/3/movie/popular";
 
@@ -31,7 +31,7 @@ public class NetworkUtils {
     private static final String APIKEY_PARAM = "api_key";
     private static final String LANGUAGE_PARAM = "language";
     private static final String LANGUAGE_VALUE = "en-US";
-    private static final String PAGE_PARAM = "page";
+    //private static final String PAGE_PARAM = "page";
     private static final String REGION_PARAM = "region";
     private static final String REGION_VALUE = "US";//Must be Upper Case
 

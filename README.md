@@ -1,7 +1,7 @@
 # udacity-nanoand-MovieStage1
 This is a project for the Udacity - Android Advanced Nanodegree
 
-**IMPORANT**: You will need to add the following file to the project:
+**IMPORTANT**: You will need to add the following file to the project:
 `res/values/keys.xml`
 
 With the following xml:

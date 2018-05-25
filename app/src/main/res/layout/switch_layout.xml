@@ -25,5 +25,5 @@
         android:text="@string/switch_on_text"
         android:layout_alignParentRight="true"
 
-        />
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

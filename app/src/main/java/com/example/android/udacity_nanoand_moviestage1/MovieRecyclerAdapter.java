@@ -3,7 +3,7 @@ package com.example.android.udacity_nanoand_moviestage1;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +21,13 @@ import org.json.JSONObject;
 
 public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdapter.MovieAdapterViewHolder> {
 
-    private static final String TAG = MovieRecyclerAdapter.class.getSimpleName();
-    private int mNumberOfItems;
+    //private static final String TAG = MovieRecyclerAdapter.class.getSimpleName();
+    //private int mNumberOfItems;
     private String movieJsonData;
     private final MovieAdapterOnClickHandler mClickHandler;
     private Context viewGroupContext;
 
-    JSONObject reader = null;
+    private JSONObject reader = null;
   private  JSONArray resArray=null;
 
     public interface MovieAdapterOnClickHandler {
@@ -66,11 +66,14 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
                      e.printStackTrace();
                  }
              }
-            try {
-                mClickHandler.onClick(jObj.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+             if (jObj != null){
+                 try {
+                     mClickHandler.onClick(jObj.toString());
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                 }
+             }
+
         }
     }
 
@@ -83,9 +86,9 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         viewGroupContext = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(viewGroupContext);
-        boolean shouldAttachToParentImmediately = false;
+        //boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
         return new MovieAdapterViewHolder(view);
     }
     /**
@@ -109,7 +112,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         try {
             JSONObject jObj = resArray.getJSONObject(position);
             String posterPath = jObj.getString("poster_path");
-            String myTitle = jObj.getString("title");
+            //String myTitle = jObj.getString("title");
 
             String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
           //  Log.i(TAG, "++++++ ** ** ** onBindViewHolder: pos="+position+" ("+myTitle+") :"+posterPath);

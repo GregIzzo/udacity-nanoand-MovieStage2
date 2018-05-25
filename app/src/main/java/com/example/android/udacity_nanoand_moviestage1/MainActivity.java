@@ -1,34 +1,34 @@
 package com.example.android.udacity_nanoand_moviestage1;
 
-import android.content.Context;
+//import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+//import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
+//import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
+//import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
+//import android.support.v7.widget.SwitchCompat;
+//import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+//import android.view.Menu;
+//import android.view.MenuInflater;
+//import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
+//import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.android.udacity_nanoand_moviestage1.utilities.NetworkUtils;
-import com.squareup.picasso.Picasso;
+//import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity
    // ImageView poster2_iv;
 
     private String mMovieData = null;
-    public static final int MOVIE_LOADER_ID= 22;
+    private static final int MOVIE_LOADER_ID= 22;
     private RecyclerView mRecyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
     //private Toolbar mTopToolbar;
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public String loadInBackground() {
-                URL searchUrl = null;
+                URL searchUrl;
                 if (sortByPopular){
                     searchUrl = NetworkUtils.buildPopularURL();
 
@@ -193,6 +193,8 @@ public class MainActivity extends AppCompatActivity
                  //   Log.i("GREGOUT", "#####  deliverResult #####: data.length " + data.length());
                     mMovieData = data;
                     //Turn it to a json object:
+
+                    /*
                     try {
                         JSONObject reader = new JSONObject(mMovieData);
                         JSONArray resArray = reader.getJSONArray("results");
@@ -201,6 +203,7 @@ public class MainActivity extends AppCompatActivity
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    */
                 }
                 super.deliverResult(data);
             }
@@ -231,7 +234,7 @@ public class MainActivity extends AppCompatActivity
     private void startMovieDataLoad() {
         Log.i("GREGOUT", " ########## startMovieDataLoad: ");
         // Create a bundle called queryBundle
-        Bundle queryBundle = null;//new Bundle();
+        //Bundle queryBundle = null;//new Bundle();
         // Use putString with OPERATION_QUERY_URL_EXTRA as the key and the String value of the URL as the value
         //url value here is https://jsonplaceholder.typicode.com/posts
        ///// queryBundle.putString(OPERATION_QUERY_URL_EXTRA,url);
@@ -241,9 +244,9 @@ public class MainActivity extends AppCompatActivity
         Loader<String> loader = loaderManager.getLoader(MOVIE_LOADER_ID);
         // If the Loader was null, initialize it. Else, restart it.
         if(loader==null){
-            loaderManager.initLoader(MOVIE_LOADER_ID, queryBundle, this);
+            loaderManager.initLoader(MOVIE_LOADER_ID, null, this);
         }else{
-            loaderManager.restartLoader(MOVIE_LOADER_ID, queryBundle, this);
+            loaderManager.restartLoader(MOVIE_LOADER_ID, null, this);
         }
     }
 
