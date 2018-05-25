@@ -27,7 +27,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
     private final MovieAdapterOnClickHandler mClickHandler;
     private Context viewGroupContext;
 
-   private JSONObject reader = null;
+    JSONObject reader = null;
   private  JSONArray resArray=null;
 
     public interface MovieAdapterOnClickHandler {
@@ -49,7 +49,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         public MovieAdapterViewHolder( View itemView) {
             super(itemView);
             listItemMovieView =  itemView.findViewById(R.id.iv_item_movie);
-            Log.i(TAG, " $$$$ class MovieAdapterViewHolder - listItemMovieView = " +listItemMovieView);
+           // Log.i(TAG, " $$$$ class MovieAdapterViewHolder - listItemMovieView = " +listItemMovieView);
             itemView.setOnClickListener(this);
         }
 
@@ -57,7 +57,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             JSONObject jObj = null;
-            Log.i(TAG, "^^^^^^^^^^onClick: "+ adapterPosition);
+          //  Log.i(TAG, "^^^^^^^^^^onClick: "+ adapterPosition);
 
              if (resArray != null){
                  try {
@@ -78,7 +78,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
     @NonNull
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        Log.i(TAG, " $$$$ onCreateViewHolder: ");
+      //  Log.i(TAG, " $$$$ onCreateViewHolder: ");
 
         viewGroupContext = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_list_item;
@@ -103,7 +103,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         //set the image of the ImageView
 
         if (movieJsonData == null){
-            Log.i(TAG, "       ++++++ onBindViewHolder - movieJsonData = null");
+          //  Log.i(TAG, "       ++++++ onBindViewHolder - movieJsonData = null");
             return;
         }
         try {
@@ -112,11 +112,11 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
             String myTitle = jObj.getString("title");
 
             String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
-            Log.i(TAG, "++++++ ** ** ** onBindViewHolder: pos="+position+" ("+myTitle+") :"+posterPath);
+          //  Log.i(TAG, "++++++ ** ** ** onBindViewHolder: pos="+position+" ("+myTitle+") :"+posterPath);
 
             Picasso.with(viewGroupContext).load(imurl).into(movieAdapterViewHolder.listItemMovieView);
         } catch (JSONException e) {
-            Log.i(TAG, "^^^^^^^^^ ERROR onBindViewHolder - reading json object");
+         //   Log.i(TAG, "^^^^^^^^^ ERROR onBindViewHolder - reading json object");
             e.printStackTrace();
         }
 
@@ -129,10 +129,10 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
     public int getItemCount() {
 
         if (null == resArray){
-            Log.i(TAG, " ** ** ** getItemCountbn null: 0");
+          //  Log.i(TAG, " ** ** ** getItemCountbn null: 0");
             return 0;
         }
-        Log.i(TAG, " ** ** ** getItemCount: "+resArray.length());
+     //   Log.i(TAG, " ** ** ** getItemCount: "+resArray.length());
         return resArray.length();
 
     }
@@ -145,16 +145,16 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         if (movieData == null){
             reader = null;
             resArray = null;
-            Log.i(TAG, "**** MovieRecyclerAdapter.setMovieData: str len= 0 calling notifyDataSetChanged");
+         //   Log.i(TAG, "**** MovieRecyclerAdapter.setMovieData: str len= 0 calling notifyDataSetChanged");
         } else {
             try {
                 reader = new JSONObject(movieJsonData);
                 resArray = reader.getJSONArray("results");
             } catch (JSONException e) {
-                Log.i(TAG, "^^^^^^^^^ ERROR onBindViewHolder - creating JSONObject");
+             //   Log.i(TAG, "^^^^^^^^^ ERROR onBindViewHolder - creating JSONObject");
                 e.printStackTrace();
             }
-            Log.i(TAG, "**** MovieRecyclerAdapter.setMovieData: str len= "+movieData.length() + " calling notifyDataSetChanged");
+           // Log.i(TAG, "**** MovieRecyclerAdapter.setMovieData: str len= "+movieData.length() + " calling notifyDataSetChanged");
         }
 
 

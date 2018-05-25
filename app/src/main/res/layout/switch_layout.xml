@@ -13,6 +13,7 @@
         android:textOff="@string/switch_off_text"
         android:textOn="@string/switch_on_text"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
      android:textAlignment="center"
         android:gravity="center"
         app:showText="true"
@@ -23,5 +24,6 @@
         android:layout_height="wrap_content"
         android:text="@string/switch_on_text"
         android:layout_alignParentRight="true"
+
         />
 </RelativeLayout>

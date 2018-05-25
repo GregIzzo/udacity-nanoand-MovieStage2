@@ -1,7 +1,16 @@
 <resources>
-    <string name="app_name">udacity-nanoand-MovieStage1</string>
-    <string name="label_trailer">Trailer</string>
+    <string name="app_name">Popular Movies</string>
+
     <string name="switch_label">Sort By</string>
     <string name="switch_on_text">Popularity</string>
     <string name="switch_off_text">Top Rated</string>
+
+    <string name="yearReleased_label">Release Date:\u0020</string>
+
+    <string name="popularity_label">Popularity:\u0020</string>
+    <string name="voteAve_label">Vote Average:\u0020</string>
+    <string name="network_error">Cannot load data.</string>
+
+    <string name="poster_cd">Movie Poster</string>
+
 </resources>
