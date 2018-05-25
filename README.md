@@ -13,3 +13,16 @@ With the following xml:
 This is the api key to access the movie api at https://www.themoviedb.org/
 You will need to signup and then use your account to request an api key. For more information about the api visit https://www.themoviedb.org/documentation/api
 
+## ATTRIBUTIONS
+This project uses the following API's:
+
+### themoviedb
+https://www.themoviedb.org/
+https://developers.themoviedb.org/3/getting-started/introduction
+
+The Movie Database (TMDb) is a community built movie and TV database. 
+
+### Picasso
+http://square.github.io/picasso/
+
+A powerful image downloading and caching library for Android
