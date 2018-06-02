@@ -1,5 +1,12 @@
-# udacity-nanoand-MovieStage1
+# udacity-nanoand-MovieStage2
 This is a project for the Udacity - Android Advanced Nanodegree
+
+# Project Overview
+Build on MovieStage1, adding the following functionality:
+  * List and play trailers for selected Movie in Detail view. Use YouTube App or in browser
+  * View Reviews for selected Movie
+  * Allow user to mark a Movie as a favorite
+  * Create a database to store favorites and other movie data
 
 **IMPORTANT**: You will need to add the following file to the project:
 `res/values/keys.xml`
