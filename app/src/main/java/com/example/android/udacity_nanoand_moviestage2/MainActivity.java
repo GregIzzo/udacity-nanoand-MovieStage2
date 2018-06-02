@@ -1,4 +1,4 @@
-package com.example.android.udacity_nanoand_moviestage1;
+package com.example.android.udacity_nanoand_moviestage2;
 
 //import android.content.Context;
 import android.content.Intent;
@@ -27,10 +27,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.example.android.udacity_nanoand_moviestage1.utilities.NetworkUtils;
+import com.example.android.udacity_nanoand_moviestage2.utilities.NetworkUtils;
 //import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

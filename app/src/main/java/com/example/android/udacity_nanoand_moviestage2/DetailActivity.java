@@ -1,4 +1,4 @@
-package com.example.android.udacity_nanoand_moviestage1;
+package com.example.android.udacity_nanoand_moviestage2;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.udacity_nanoand_moviestage1.utilities.DataUtilities;
+import com.example.android.udacity_nanoand_moviestage2.utilities.DataUtilities;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {

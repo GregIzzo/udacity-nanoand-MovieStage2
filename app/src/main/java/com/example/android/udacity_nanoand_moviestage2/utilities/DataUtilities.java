@@ -1,4 +1,4 @@
-package com.example.android.udacity_nanoand_moviestage1.utilities;
+package com.example.android.udacity_nanoand_moviestage2.utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

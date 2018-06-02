@@ -1,4 +1,4 @@
-package com.example.android.udacity_nanoand_moviestage1;
+package com.example.android.udacity_nanoand_moviestage2;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

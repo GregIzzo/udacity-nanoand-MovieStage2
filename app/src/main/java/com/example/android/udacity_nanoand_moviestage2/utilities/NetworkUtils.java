@@ -1,11 +1,11 @@
-package com.example.android.udacity_nanoand_moviestage1.utilities;
+package com.example.android.udacity_nanoand_moviestage2.utilities;
 
 import android.content.Context;
 import android.net.Uri;
 //import android.provider.Settings;
 //import android.util.Log;
 
-import com.example.android.udacity_nanoand_moviestage1.R ;
+import com.example.android.udacity_nanoand_moviestage2.R ;
 
 
 import java.io.IOException;
