@@ -49,7 +49,6 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         public MovieAdapterViewHolder( View itemView) {
             super(itemView);
             listItemMovieView =  itemView.findViewById(R.id.iv_item_movie);
-           // Log.i(TAG, " $$$$ class MovieAdapterViewHolder - listItemMovieView = " +listItemMovieView);
             itemView.setOnClickListener(this);
         }
 
@@ -57,7 +56,6 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             JSONObject jObj = null;
-          //  Log.i(TAG, "^^^^^^^^^^onClick: "+ adapterPosition);
 
              if (resArray != null){
                  try {
@@ -81,12 +79,10 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
     @NonNull
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-      //  Log.i(TAG, " $$$$ onCreateViewHolder: ");
 
         viewGroupContext = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_list_item;
         LayoutInflater inflater = LayoutInflater.from(viewGroupContext);
-        //boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
         return new MovieAdapterViewHolder(view);
@@ -106,20 +102,16 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         //set the image of the ImageView
 
         if (movieJsonData == null){
-          //  Log.i(TAG, "       ++++++ onBindViewHolder - movieJsonData = null");
             return;
         }
         try {
             JSONObject jObj = resArray.getJSONObject(position);
             String posterPath = jObj.getString("poster_path");
-            //String myTitle = jObj.getString("title");
 
             String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
-          //  Log.i(TAG, "++++++ ** ** ** onBindViewHolder: pos="+position+" ("+myTitle+") :"+posterPath);
 
             Picasso.with(viewGroupContext).load(imurl).into(movieAdapterViewHolder.listItemMovieView);
         } catch (JSONException e) {
-         //   Log.i(TAG, "^^^^^^^^^ ERROR onBindViewHolder - reading json object");
             e.printStackTrace();
         }
 
