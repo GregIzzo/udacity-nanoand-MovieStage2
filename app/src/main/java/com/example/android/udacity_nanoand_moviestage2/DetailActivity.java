@@ -16,11 +16,17 @@ import android.widget.TextView;
 
 import com.example.android.udacity_nanoand_moviestage2.utilities.DataUtilities;
 import com.example.android.udacity_nanoand_moviestage2.utilities.NetworkUtils;
+import com.example.android.udacity_nanoand_moviestage2.utilities.ReadAPI;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URL;
 
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
+import javax.security.auth.login.LoginException;
+
+public class DetailActivity extends AppCompatActivity  {
 /*
 TO DO
 [ ] onCreate = check my custom database to see if data for this movie already exists.
@@ -31,17 +37,22 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
  */
 
     private static final int MOVIE_DETAIL_LOADER_ID= 32;
+    private static final int VIDEO_DETAIL_LOADER_ID=42;
+    private static final int REVIEW_DETAIL_LOADER_ID=52;
+
     private static final String TAG = "GGG";
 
     private  TextView title_tv;
     private  ImageView posterImageView;
-    private   TextView year_tv;
+    private  TextView year_tv;
     private  TextView summary_tv;
     private  TextView popularity_tv;
     private  TextView voteave_tv;
 
     private String movieId = "";
     private String detailData;
+    private JSONObject videoJSON;
+    private JSONObject reviewJSON;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,11 +61,67 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         Intent intent = getIntent();
         Context context = getBaseContext();
 
+        //Put Movie Title in Detail Title
+        movieId = intent.getStringExtra("id");
         /*
         CHECK CUSTOM DB FOR DATA. IF CURRENT MOVIEID EXISTS THERE, USE THAT DATA INSTEAD OF TRIGGERING LOAD
          */
-        getSupportLoaderManager().initLoader(MOVIE_DETAIL_LOADER_ID, null, DetailActivity.this );
+        //getSupportLoaderManager().initLoader(MOVIE_DETAIL_LOADER_ID, null, DetailActivity.this );
+        //
+        // VIDEO DATA LOAD
+        //
+        getSupportLoaderManager().initLoader(VIDEO_DETAIL_LOADER_ID, null, new LoaderManager.LoaderCallbacks<String>() {
+            @NonNull
+            @Override
+            public Loader<String> onCreateLoader(final int id, @Nullable final Bundle args) {
+                return new ReadAPI(DetailActivity.this , NetworkUtils.buildVideosURL(movieId) );
+            }
 
+            @Override
+            public void onLoadFinished(@NonNull Loader<String> loader, String data) {
+                if (data == null){
+                    return;
+                }
+                Log.i(TAG, "onLoadFinished: VideoData="+data);
+                try {
+                    videoJSON = new JSONObject(data);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onLoaderReset(@NonNull Loader<String> loader) {
+            }
+        }).forceLoad();
+
+        //
+        // REVIEWS DATA LOAD
+        //
+        getSupportLoaderManager().initLoader(REVIEW_DETAIL_LOADER_ID, null, new LoaderManager.LoaderCallbacks<String>() {
+            @NonNull
+            @Override
+            public Loader<String> onCreateLoader(final int id, @Nullable final Bundle args) {
+                return new ReadAPI(DetailActivity.this , NetworkUtils.buildReviewsURL(movieId) );
+            }
+
+            @Override
+            public void onLoadFinished(@NonNull Loader<String> loader, String data) {
+                if (data == null){
+                    return;
+                }
+                Log.i(TAG, "onLoadFinished: ReviewData="+data);
+                try {
+                    reviewJSON = new JSONObject(data);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onLoaderReset(@NonNull Loader<String> loader) {
+            }
+        }).forceLoad();
 
         //setTitle(intent.getStringExtra("title"));
         if (title_tv == null)   title_tv = findViewById(R.id.title_tv);
@@ -77,11 +144,11 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
         if (voteave_tv == null) voteave_tv =  findViewById(R.id.voteave_tv);
         voteave_tv.setText(String.valueOf(intent.getDoubleExtra("vote_average",0))) ;
-        //Put Movie Title in Detail Title
-        movieId = intent.getStringExtra("id");
+
         //Load Videos and Reviews data
 
     }
+    /*
     // ADDED FOR LOADERMANAGER
     @NonNull
     @Override
@@ -143,4 +210,5 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     public void onLoaderReset(@NonNull Loader<String> loader) {
 
     }
+    */
 }
