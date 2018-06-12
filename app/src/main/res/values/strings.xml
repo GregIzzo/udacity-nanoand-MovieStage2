@@ -12,5 +12,6 @@
     <string name="network_error">Cannot load data.</string>
 
     <string name="poster_cd">Movie Poster</string>
-
+    <string name="video_cd">Movie Video</string>
+    <string name="review_cd">Movie Review</string>
 </resources>

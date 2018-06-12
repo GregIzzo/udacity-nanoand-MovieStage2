@@ -9,6 +9,9 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,7 +29,7 @@ import java.net.URL;
 
 import javax.security.auth.login.LoginException;
 
-public class DetailActivity extends AppCompatActivity  {
+public class DetailActivity extends AppCompatActivity implements VideoRecyclerAdapter.VideoAdapterOnClickHandler {
 /*
 TO DO
 [ ] onCreate = check my custom database to see if data for this movie already exists.
@@ -53,6 +56,13 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     private String detailData;
     private JSONObject videoJSON;
     private JSONObject reviewJSON;
+
+    private RecyclerView mVideoRecyclerView;
+    private VideoRecyclerAdapter videoRecyclerAdapter;
+
+    private RecyclerView mReviewRecyclerView;
+    //private VideoRecyclerAdapter videoRecyclerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +77,18 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         CHECK CUSTOM DB FOR DATA. IF CURRENT MOVIEID EXISTS THERE, USE THAT DATA INSTEAD OF TRIGGERING LOAD
          */
         //getSupportLoaderManager().initLoader(MOVIE_DETAIL_LOADER_ID, null, DetailActivity.this );
+
+        //Get ImageView on detail screen
+        mVideoRecyclerView =  findViewById(R.id.rv_videos);
+
+        RecyclerView.LayoutManager mVideoLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false); //new GridLayoutManager(this, 1);
+        mVideoRecyclerView.setLayoutManager(mVideoLayoutManager);
+        videoRecyclerAdapter = new VideoRecyclerAdapter(this );
+
+        /* Setting the adapter attaches it to the RecyclerView in our layout. */
+        mVideoRecyclerView.setAdapter(videoRecyclerAdapter);
+
+
         //
         // VIDEO DATA LOAD
         //
@@ -85,6 +107,8 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
                 Log.i(TAG, "onLoadFinished: VideoData="+data);
                 try {
                     videoJSON = new JSONObject(data);
+                    videoRecyclerAdapter.setVideoData(data);
+                    //showMovieDataView();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -146,6 +170,14 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         voteave_tv.setText(String.valueOf(intent.getDoubleExtra("vote_average",0))) ;
 
         //Load Videos and Reviews data
+
+    }
+
+    @Override
+    public void onClick(String movieData) throws JSONException {
+        Log.i(TAG, "onClick: data=" + movieData);
+        JSONObject reader = new JSONObject(movieData);
+        Log.i(TAG, "name: " +reader.getString("name")+ " key="+ reader.getString("key"));
 
     }
     /*
