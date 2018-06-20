@@ -1,7 +1,11 @@
 package com.example.android.udacity_nanoand_moviestage2;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -26,10 +30,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
-public class DetailActivity extends AppCompatActivity implements VideoRecyclerAdapter.VideoAdapterOnClickHandler {
+public class DetailActivity extends AppCompatActivity implements VideoRecyclerAdapter.VideoAdapterOnClickHandler, ReviewRecyclerAdapter.ReviewAdapterOnClickHandler {
 /*
 TO DO
 [ ] onCreate = check my custom database to see if data for this movie already exists.
@@ -61,7 +66,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     private VideoRecyclerAdapter videoRecyclerAdapter;
 
     private RecyclerView mReviewRecyclerView;
-    //private VideoRecyclerAdapter videoRecyclerAdapter;
+    private ReviewRecyclerAdapter reviewRecyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +93,15 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mVideoRecyclerView.setAdapter(videoRecyclerAdapter);
 
+        //Reviews
+        mReviewRecyclerView =  findViewById(R.id.rv_reviews);
+
+        RecyclerView.LayoutManager mReviewLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false); //new GridLayoutManager(this, 1);
+        mReviewRecyclerView.setLayoutManager(mReviewLayoutManager);
+        reviewRecyclerAdapter = new ReviewRecyclerAdapter(this );
+
+        /* Setting the adapter attaches it to the RecyclerView in our layout. */
+        mReviewRecyclerView.setAdapter(reviewRecyclerAdapter);
 
         //
         // VIDEO DATA LOAD
@@ -137,6 +151,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
                 Log.i(TAG, "onLoadFinished: ReviewData="+data);
                 try {
                     reviewJSON = new JSONObject(data);
+                    reviewRecyclerAdapter.setReviewData(data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -174,11 +189,73 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     }
 
     @Override
-    public void onClick(String movieData) throws JSONException {
-        Log.i(TAG, "onClick: data=" + movieData);
+    public void onClick(int type, String movieData) throws JSONException {
+        Log.i(TAG, "onClick: type="+ type+" data=" + movieData);
         JSONObject reader = new JSONObject(movieData);
-        Log.i(TAG, "name: " +reader.getString("name")+ " key="+ reader.getString("key"));
+        switch(type){
+            case 1:
+                String videoKey = reader.getString("key");
+                Log.i(TAG, "name: " +reader.getString("name")+ " key="+ videoKey);
+                //try to play video
+                Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + videoKey));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +videoKey));
+                //now check if intents will be picked up by another app
+                PackageManager packageManager = getPackageManager();
+                //  List<ResolveInfo> activities = packageManager.queryIntentActivities(appIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                if (appIntent.resolveActivity(getPackageManager()) != null){
+                    //something will handle it
+                    Log.i(TAG, "onClick: ### OKAY FROM PACKAGE MANAGEER - YouTube App Available ################");
+                    try{
+                        startActivity(appIntent);
+                    } catch (ActivityNotFoundException ex){
+                        //app intent didn't work, try web
+                        /// getApplicationContext().startActivity(webIntent);
+                        Log.i(TAG, "onClick: **** *** youtube intent errored "+ex.toString());
 
+                    }
+                } else {
+                    //try web
+                    Log.i(TAG, "onClick: ### OKAY FROM PACKAGE MANAGEER - Web Available ################");
+                    try{
+                        startActivity(webIntent);
+                    } catch (ActivityNotFoundException ex){
+                        //app intent didn't work,
+                        Log.i(TAG, "onClick: **** *** Failed to start WebIntent ACtivity: "+ex.toString());
+
+                    }
+                }
+            break;
+            case 2:
+                //author, content, id, url
+                String reviewKey = reader.getString("id");
+                String author = reader.getString("author");
+                Log.i(TAG, "** REVIEW *** author: " +author+ " id="+ reviewKey);
+                /*
+                //try to play video
+                Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + videoKey));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +videoKey));
+                //now check if intents will be picked up by another app
+                PackageManager packageManager = getPackageManager();
+                //  List<ResolveInfo> activities = packageManager.queryIntentActivities(appIntent, PackageManager.MATCH_DEFAULT_ONLY);
+                if (appIntent.resolveActivity(getPackageManager()) != null){
+                    //something will handle it
+                    Log.i(TAG, "onClick: ### OKAY FROM PACKAGE MANAGEER ################");
+                    try{
+                        startActivity(appIntent);
+                    } catch (ActivityNotFoundException ex){
+                        //app intent didn't work, try web
+                        /// getApplicationContext().startActivity(webIntent);
+                        Log.i(TAG, "onClick: **** *** youtube intent errored "+ex.toString());
+
+                    }
+                }
+                */
+                break;
+
+
+        }
+
+      
     }
     /*
     // ADDED FOR LOADERMANAGER

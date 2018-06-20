@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -21,36 +22,43 @@ import org.json.JSONObject;
  * Created by Greg on 5/15/2018.
  */
 //
-public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdapter.VideoAdapterViewHolder>  {
+public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAdapter.ReviewAdapterViewHolder>  {
 
-    private static final String TAG = "VIDEOOO";
+    private static final String TAG = "ReviewOO";
     //private int mNumberOfItems;
-    private String videoJsonData;
-    private final VideoAdapterOnClickHandler mClickHandler;
+    private String ReviewJsonData;
+    private final ReviewAdapterOnClickHandler mClickHandler;
     private Context viewGroupContext;
 
     private JSONObject reader = null;
     private  JSONArray resArray=null;
 
-    public interface VideoAdapterOnClickHandler {
+    public interface ReviewAdapterOnClickHandler {
         void onClick(int type, String movieData) throws JSONException;
     }
     /*
-     * Constructor for VideoRecyclerAdapter - accepts number of items to display
+     * Constructor for ReviewRecyclerAdapter - accepts number of items to display
      */
-    public VideoRecyclerAdapter(VideoAdapterOnClickHandler mclick) {
+    public ReviewRecyclerAdapter(ReviewAdapterOnClickHandler mclick) {
         // mNumberOfItems = numberOfItems;
         mClickHandler = mclick;
     }
 
 
-    public class VideoAdapterViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener {
+    public class ReviewAdapterViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener {
 
-        public final ImageView listItemVideoView;
+        public final ImageView listItemReviewView;
+        public final TextView listItemAuthorView;
+        public final TextView listItemContentView;
 
-        public VideoAdapterViewHolder( View itemView) {
+
+        public ReviewAdapterViewHolder( View itemView) {
+
             super(itemView);
-            listItemVideoView =  itemView.findViewById(R.id.iv_item_video);
+            Log.i(TAG, "ReviewAdapterViewHolder: !!! CREATOR!!!");
+            listItemReviewView =  itemView.findViewById(R.id.iv_item_review);
+            listItemAuthorView = itemView.findViewById(R.id.tv_author_review);
+            listItemContentView = itemView.findViewById(R.id.tv_content_review);
             itemView.setOnClickListener(this);
         }
 
@@ -68,26 +76,25 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
             }
             if (jObj != null){
                 try {
-                    mClickHandler.onClick(1, jObj.toString());//1=videos
+                    mClickHandler.onClick(2, jObj.toString());//2=review
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-
         }
     }
 
 
     @NonNull
     @Override
-    public VideoAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public ReviewAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
         viewGroupContext = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.video_list_item;
+        int layoutIdForListItem = R.layout.review_list_item;
         LayoutInflater inflater = LayoutInflater.from(viewGroupContext);
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
-        return new VideoAdapterViewHolder(view);
+        return new ReviewAdapterViewHolder(view);
     }
     /**
      * OnBindViewHolder is called by RecyclerView to display the data at the specified
@@ -95,15 +102,15 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
      * image for the given position, using the "position" argument that is conveniently
      * passed into us.
      *
-     * @param VideoAdapterViewHolder The VideoAdapterViewHolder which should be updated to represent the
+     * @param ReviewAdapterViewHolder The ReviewAdapterViewHolder which should be updated to represent the
      *                                  contents of the item at the given position in the data set.
      * @param position                  The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(@NonNull VideoAdapterViewHolder VideoAdapterViewHolder, int position) {
+    public void onBindViewHolder(@NonNull ReviewAdapterViewHolder ReviewAdapterViewHolder, int position) {
         //set the image of the ImageView
 
-        if (videoJsonData == null){
+        if (ReviewJsonData == null){
             return;
         }
         if (resArray == null) {
@@ -117,12 +124,30 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
                 Log.i(TAG, "GG onBindViewHolder: resArray is an object but position "+position+" returned null");
                 return;
             }
-           // JSONArray resultJArray = jObj.getJSONArray("results");
-            String site = jObj.getString("site");
-            String key = jObj.getString("key");
-            String nname = jObj.getString("name");
-            Log.i(TAG, " GGonBindViewHolder: POSITION="+position+ " site=" + site + " key="+ key + " name="+nname);
-            VideoAdapterViewHolder.listItemVideoView.setImageResource(R.mipmap.ic_sun);
+            // JSONArray resultJArray = jObj.getJSONArray("results");
+            /*
+                keys are:
+                    author
+                    content
+                    id
+                    url
+             */
+            String author = jObj.getString("author");
+            String content = jObj.getString("content");
+            String content_bit = "";
+            if (content.length() > 49){
+                content_bit = content.substring(0,49) + " . . . ";
+            } else {
+                content_bit = content;
+            }
+            String id = jObj.getString("id");
+            String url = jObj.getString("url");
+
+            Log.i(TAG, " GGonBindViewHolder (Review): POSITION="+position+ " author=" + author + " id="+ id + " url="+url);
+            ReviewAdapterViewHolder.listItemReviewView.setImageResource(R.mipmap.ic_heart);
+            ReviewAdapterViewHolder.listItemAuthorView.setText(author);
+            ReviewAdapterViewHolder.listItemContentView.setText(content_bit);
+
             /*
             	{
             	"id": 278,
@@ -146,15 +171,13 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
             /*
             String posterPath = jObj.getString("poster_path");
             String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
-            Picasso.with(viewGroupContext).load(imurl).into(VideoAdapterViewHolder.listItemVideoView);
+            Picasso.with(viewGroupContext).load(imurl).into(ReviewAdapterViewHolder.listItemReviewView);
             */
 
         } catch (JSONException e) {
+            Log.i(TAG, "onBindViewHolder: BAD error="+e.toString());
             e.printStackTrace();
         }
-
-
-
     }
 
 
@@ -173,21 +196,21 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
     /*
 
    */
-    public void setVideoData(String videoData) {
-        videoJsonData = videoData;
-        if (videoData == null){
+    public void setReviewData(String ReviewData) {
+        ReviewJsonData = ReviewData;
+        if (ReviewData == null){
             reader = null;
             resArray = null;
-            //   Log.i(TAG, "**** VideoRecyclerAdapter.setVideoData: str len= 0 calling notifyDataSetChanged");
+            //   Log.i(TAG, "**** ReviewRecyclerAdapter.setReviewData: str len= 0 calling notifyDataSetChanged");
         } else {
             try {
-                reader = new JSONObject(videoJsonData);
+                reader = new JSONObject(ReviewJsonData);
                 resArray = reader.getJSONArray("results");
             } catch (JSONException e) {
                 //   Log.i(TAG, "^^^^^^^^^ ERROR onBindViewHolder - creating JSONObject");
                 e.printStackTrace();
             }
-            // Log.i(TAG, "**** VideoRecyclerAdapter.setVideoData: str len= "+movieData.length() + " calling notifyDataSetChanged");
+            // Log.i(TAG, "**** ReviewRecyclerAdapter.setReviewData: str len= "+movieData.length() + " calling notifyDataSetChanged");
         }
 
 
