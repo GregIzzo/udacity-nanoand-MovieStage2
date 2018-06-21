@@ -18,7 +18,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="fill_vertical"
             android:orientation="vertical"
             android:padding="24dp">
 
@@ -39,14 +40,21 @@
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/poster_cd"
                 android:padding="8dp" />
-
+            <ToggleButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/favorite_tb"
+                android:textOff=""
+                android:textOn=""
+                android:background="@drawable/favorite_btn_toggle"
+                />
             <TextView
                 android:id="@+id/summary_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:textAlignment="textStart"
                 android:layout_gravity="start"
+                android:textAlignment="textStart"
 
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 app:layout_constraintTop_toBottomOf="@id/movie_detail_block_fl"
@@ -56,10 +64,10 @@
                 android:id="@+id/year_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:padding="8dp"
                 android:layout_marginTop="24dp"
                 android:background="@color/colorTextBackground"
+                android:gravity="center_horizontal"
+                android:padding="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 tools:text="2018" />
 
@@ -107,27 +115,35 @@
                     android:layout_height="match_parent"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     tools:text="12.2" />
+
+                <RatingBar
+                    android:id="@+id/ratingBar"
+                    style="@style/Widget.AppCompat.RatingBar.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:rating="0.0"
+                    android:stepSize="0.5" />
             </LinearLayout>
+
             <android.support.v7.widget.RecyclerView
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/rv_videos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@drawable/ic_layout_border"
-                android:padding="10dp"
-                >
+                android:orientation="horizontal"
+                android:padding="10dp" />
 
-            </android.support.v7.widget.RecyclerView>
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_reviews"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="match_parent"
                 android:background="@drawable/ic_layout_border"
+                android:orientation="vertical"
                 android:padding="10dp"
-                >
-
-            </android.support.v7.widget.RecyclerView>
+                android:scrollbars="none" />
 
         </LinearLayout>
     </ScrollView>

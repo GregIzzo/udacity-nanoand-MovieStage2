@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,8 +19,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.android.udacity_nanoand_moviestage2.utilities.DataUtilities;
 import com.example.android.udacity_nanoand_moviestage2.utilities.NetworkUtils;
@@ -50,12 +54,14 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
     private static final String TAG = "GGG";
 
-    private  TextView title_tv;
-    private  ImageView posterImageView;
-    private  TextView year_tv;
-    private  TextView summary_tv;
-    private  TextView popularity_tv;
-    private  TextView voteave_tv;
+    private TextView title_tv;
+    private ImageView posterImageView;
+    private TextView year_tv;
+    private TextView summary_tv;
+    private TextView popularity_tv;
+    private TextView voteave_tv;
+    private RatingBar ratingBar;
+    private ToggleButton favoritesToggle;
 
     private String movieId = "";
     private String detailData;
@@ -171,6 +177,19 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         if (posterImageView == null) posterImageView =  findViewById(R.id.poster_iv);
         Picasso.with(context).load(imurl).into(posterImageView);
 
+        if (favoritesToggle == null) favoritesToggle = findViewById(R.id.favorite_tb);
+        favoritesToggle.setChecked(false);
+        favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
+        favoritesToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if(isChecked ){
+                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
+                } else {
+                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
+                }
+            }
+        });
         if (year_tv == null) year_tv =  findViewById(R.id.year_tv);
         String releaseText = getString(R.string.yearReleased_label) + DataUtilities.getFormattedDate(intent.getStringExtra("release_date"));
         year_tv.setText(releaseText);
@@ -179,11 +198,13 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         summary_tv.setText(intent.getStringExtra("overview"));
 
         if (popularity_tv == null) popularity_tv =  findViewById(R.id.popularity_tv);
-        popularity_tv.setText(String.valueOf(intent.getDoubleExtra("popularity",0))) ;
+        popularity_tv.setText( String.format("%.1f", (intent.getDoubleExtra("popularity",0)))) ;
 
         if (voteave_tv == null) voteave_tv =  findViewById(R.id.voteave_tv);
         voteave_tv.setText(String.valueOf(intent.getDoubleExtra("vote_average",0))) ;
 
+        if (ratingBar == null)  ratingBar = findViewById(R.id.ratingBar);
+        ratingBar.setRating((float) (intent.getDoubleExtra("vote_average",0)/2.0));
         //Load Videos and Reviews data
 
     }
