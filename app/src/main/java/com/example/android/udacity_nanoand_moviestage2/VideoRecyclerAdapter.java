@@ -31,6 +31,7 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
 
     private JSONObject reader = null;
     private  JSONArray resArray=null;
+    private String youTubeThumburlprefix = "https://img.youtube.com/vi/";
 
     public interface VideoAdapterOnClickHandler {
         void onClick(int type, String movieData) throws JSONException;
@@ -122,7 +123,10 @@ public class VideoRecyclerAdapter extends RecyclerView.Adapter<VideoRecyclerAdap
             String key = jObj.getString("key");
             String nname = jObj.getString("name");
             Log.i(TAG, " GGonBindViewHolder: POSITION="+position+ " site=" + site + " key="+ key + " name="+nname);
-            VideoAdapterViewHolder.listItemVideoView.setImageResource(R.mipmap.ic_sun);
+            //show YouTube thumbnail
+            String imurl =youTubeThumburlprefix + key+"/0.jpg";
+            Picasso.with(viewGroupContext).load(imurl).into(VideoAdapterViewHolder.listItemVideoView);
+           // VideoAdapterViewHolder.listItemVideoView.setImageResource(R.mipmap.ic_sun);
             /*
             	{
             	"id": 278,

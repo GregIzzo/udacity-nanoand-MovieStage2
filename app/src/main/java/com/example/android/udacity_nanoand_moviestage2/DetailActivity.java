@@ -1,13 +1,16 @@
 package com.example.android.udacity_nanoand_moviestage2;
 
+import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
@@ -18,10 +21,17 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -73,7 +83,8 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
     private RecyclerView mReviewRecyclerView;
     private ReviewRecyclerAdapter reviewRecyclerAdapter;
-
+    private PopupWindow popup;
+    private ConstraintLayout sv_detailscreen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,7 +217,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         if (ratingBar == null)  ratingBar = findViewById(R.id.ratingBar);
         ratingBar.setRating((float) (intent.getDoubleExtra("vote_average",0)/2.0));
         //Load Videos and Reviews data
-
+        sv_detailscreen = findViewById(R.id.cl_detailmain);
     }
 
     @Override
@@ -214,7 +225,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         Log.i(TAG, "onClick: type="+ type+" data=" + movieData);
         JSONObject reader = new JSONObject(movieData);
         switch(type){
-            case 1:
+            case 1: //VIDEO THUMBNAIL CLICKED
                 String videoKey = reader.getString("key");
                 Log.i(TAG, "name: " +reader.getString("name")+ " key="+ videoKey);
                 //try to play video
@@ -246,31 +257,37 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
                     }
                 }
             break;
-            case 2:
+            case 2: //REVIEW CLICKED
                 //author, content, id, url
                 String reviewKey = reader.getString("id");
                 String author = reader.getString("author");
+                String reviewText = reader.getString("content");
                 Log.i(TAG, "** REVIEW *** author: " +author+ " id="+ reviewKey);
-                /*
-                //try to play video
-                Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + videoKey));
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +videoKey));
-                //now check if intents will be picked up by another app
-                PackageManager packageManager = getPackageManager();
-                //  List<ResolveInfo> activities = packageManager.queryIntentActivities(appIntent, PackageManager.MATCH_DEFAULT_ONLY);
-                if (appIntent.resolveActivity(getPackageManager()) != null){
-                    //something will handle it
-                    Log.i(TAG, "onClick: ### OKAY FROM PACKAGE MANAGEER ################");
-                    try{
-                        startActivity(appIntent);
-                    } catch (ActivityNotFoundException ex){
-                        //app intent didn't work, try web
-                        /// getApplicationContext().startActivity(webIntent);
-                        Log.i(TAG, "onClick: **** *** youtube intent errored "+ex.toString());
-
-                    }
+                //show popup
+                //rl_reviewpopup_layout
+                LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                View popView = inflater.inflate(R.layout.reviewpopup_layout, null);
+                TextView content = popView.findViewById(R.id.tv_body_review);
+                content.setText(reviewText);
+                popup = new PopupWindow(
+                        popView,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        true
+                );
+                if(Build.VERSION.SDK_INT>=21){
+                    popup.setElevation(5.0f);
                 }
-                */
+                popup.setAnimationStyle(R.style.popup_window_animation_phone);
+                ImageButton closeButton = (ImageButton) popView.findViewById(R.id.ib_rpop_close);
+                closeButton.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view){
+                        popup.dismiss();
+                    }
+                });
+
+                popup.showAtLocation(sv_detailscreen, Gravity.CENTER,0,0);
                 break;
 
 
