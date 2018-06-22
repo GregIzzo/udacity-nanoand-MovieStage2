@@ -1,23 +1,19 @@
 package com.example.android.udacity_nanoand_moviestage2;
 
-import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,8 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -43,11 +37,6 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.URL;
-import java.util.List;
-
-import javax.security.auth.login.LoginException;
 
 public class DetailActivity extends AppCompatActivity implements VideoRecyclerAdapter.VideoAdapterOnClickHandler, ReviewRecyclerAdapter.ReviewAdapterOnClickHandler {
 /*
@@ -280,7 +269,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
                 if(Build.VERSION.SDK_INT>=21){
                     popup.setElevation(5.0f);
                 }
-                popup.setAnimationStyle(R.style.popup_window_animation_phone);
+                popup.setAnimationStyle(R.style.popup_window_animation);
                 FrameLayout popframe = (FrameLayout) popView.findViewById(R.id.rl_reviewpopup_layout);
                 //ConstraintLayout detailView = findViewById(R.id.cl_detailmain);
 
