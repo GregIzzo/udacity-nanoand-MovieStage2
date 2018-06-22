@@ -30,6 +30,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.example.android.udacity_nanoand_moviestage2.database.AppDatabase;
+import com.example.android.udacity_nanoand_moviestage2.database.FavoriteEntry;
 import com.example.android.udacity_nanoand_moviestage2.utilities.DataUtilities;
 import com.example.android.udacity_nanoand_moviestage2.utilities.NetworkUtils;
 import com.example.android.udacity_nanoand_moviestage2.utilities.ReadAPI;
@@ -64,6 +66,12 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     private ToggleButton favoritesToggle;
 
     private String movieId = "";
+    private String movieTitle = "";
+    private String moviePosterPath;
+    private String movieReleaseDate;
+    private String movieOverview;
+    private Double moviePopularity;
+    private Double movieVoteAve;
     private String detailData;
     private JSONObject videoJSON;
     private JSONObject reviewJSON;
@@ -75,6 +83,8 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     private ReviewRecyclerAdapter reviewRecyclerAdapter;
     private PopupWindow popup;
     private ConstraintLayout sv_detailscreen;
+    private AppDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,8 +93,17 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         Intent intent = getIntent();
         Context context = getBaseContext();
 
-        //Put Movie Title in Detail Title
+        mDb = AppDatabase.getsInstance(getApplicationContext());
+
+        //Extract movie properties from Intent
         movieId = intent.getStringExtra("id");
+        movieTitle = intent.getStringExtra("title");
+        moviePosterPath = intent.getStringExtra("backdrop_path");
+        movieReleaseDate = intent.getStringExtra("release_date");
+        movieOverview = intent.getStringExtra("overview");
+        moviePopularity = intent.getDoubleExtra("popularity",0);
+        movieVoteAve = intent.getDoubleExtra("vote_average",0);
+
         /*
         CHECK CUSTOM DB FOR DATA. IF CURRENT MOVIEID EXISTS THERE, USE THAT DATA INSTEAD OF TRIGGERING LOAD
          */
@@ -171,41 +190,46 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
         //setTitle(intent.getStringExtra("title"));
         if (title_tv == null)   title_tv = findViewById(R.id.title_tv);
-        title_tv.setText(intent.getStringExtra("title"));
+        title_tv.setText(movieTitle);
 
-        String posterPath = intent.getStringExtra("backdrop_path");
-        String imurl = "https://image.tmdb.org/t/p/w780" + posterPath;
+        String imurl = "https://image.tmdb.org/t/p/w780" + moviePosterPath;
         if (posterImageView == null) posterImageView =  findViewById(R.id.poster_iv);
         Picasso.with(context).load(imurl).into(posterImageView);
 
-        if (favoritesToggle == null) favoritesToggle = findViewById(R.id.favorite_tb);
-        favoritesToggle.setChecked(false);
+        if (favoritesToggle == null) favoritesToggle = findViewById(R.id.favorite_tb);//get favorite 'heart'
+
+        favoritesToggle.setChecked(false);//set it to false TEMPORARILY. NEED TO READ DATABASE TO KNOW WHAT TO SET THIS TO
         favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
         favoritesToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if(isChecked ){
+                    // make this a favorite
                     favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
+                    //Add to database
+                    FavoriteEntry favoriteEntry = new FavoriteEntry(movieId,movieTitle);
+                    mDb.favoriteDao.insertFavorite(favoriteEntry);
+                    finish();
                 } else {
                     favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
                 }
             }
         });
         if (year_tv == null) year_tv =  findViewById(R.id.year_tv);
-        String releaseText = getString(R.string.yearReleased_label) + DataUtilities.getFormattedDate(intent.getStringExtra("release_date"));
+        String releaseText = getString(R.string.yearReleased_label) + DataUtilities.getFormattedDate(movieReleaseDate);
         year_tv.setText(releaseText);
 
         if (summary_tv == null) summary_tv =  findViewById(R.id.summary_tv);
-        summary_tv.setText(intent.getStringExtra("overview"));
+        summary_tv.setText(movieOverview);
 
         if (popularity_tv == null) popularity_tv =  findViewById(R.id.popularity_tv);
-        popularity_tv.setText( String.format("%.1f", (intent.getDoubleExtra("popularity",0)))) ;
+        popularity_tv.setText( String.format("%.1f", (moviePopularity))) ;
 
         if (voteave_tv == null) voteave_tv =  findViewById(R.id.voteave_tv);
-        voteave_tv.setText(String.valueOf(intent.getDoubleExtra("vote_average",0))) ;
+        voteave_tv.setText(String.valueOf(movieVoteAve)) ;
 
         if (ratingBar == null)  ratingBar = findViewById(R.id.ratingBar);
-        ratingBar.setRating((float) (intent.getDoubleExtra("vote_average",0)/2.0));
+        ratingBar.setRating((float) (movieVoteAve/2.0));
         //Load Videos and Reviews data
         sv_detailscreen = findViewById(R.id.cl_detailmain);
 
