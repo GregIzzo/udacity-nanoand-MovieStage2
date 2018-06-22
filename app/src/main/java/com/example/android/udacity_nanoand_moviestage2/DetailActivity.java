@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -218,6 +219,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         ratingBar.setRating((float) (intent.getDoubleExtra("vote_average",0)/2.0));
         //Load Videos and Reviews data
         sv_detailscreen = findViewById(R.id.cl_detailmain);
+
     }
 
     @Override
@@ -271,18 +273,24 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
                 content.setText(reviewText);
                 popup = new PopupWindow(
                         popView,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.FILL_PARENT,
+                        LinearLayout.LayoutParams.FILL_PARENT,
                         true
                 );
                 if(Build.VERSION.SDK_INT>=21){
                     popup.setElevation(5.0f);
                 }
                 popup.setAnimationStyle(R.style.popup_window_animation_phone);
+                FrameLayout popframe = (FrameLayout) popView.findViewById(R.id.rl_reviewpopup_layout);
+                //ConstraintLayout detailView = findViewById(R.id.cl_detailmain);
+
+
+
                 ImageButton closeButton = (ImageButton) popView.findViewById(R.id.ib_rpop_close);
                 closeButton.setOnClickListener( new View.OnClickListener() {
                     @Override
                     public void onClick(View view){
+
                         popup.dismiss();
                     }
                 });

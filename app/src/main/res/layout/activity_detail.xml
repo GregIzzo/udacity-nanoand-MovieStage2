@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/cl_detailmain"
+    android:foreground="@drawable/shape_rectangle_dim"
     tools:context="com.example.android.udacity_nanoand_moviestage2.DetailActivity"
 
     >
