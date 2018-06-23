@@ -40,6 +40,8 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class DetailActivity extends AppCompatActivity implements VideoRecyclerAdapter.VideoAdapterOnClickHandler, ReviewRecyclerAdapter.ReviewAdapterOnClickHandler {
 /*
 TO DO
@@ -94,6 +96,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         Context context = getBaseContext();
 
         mDb = AppDatabase.getsInstance(getApplicationContext());
+        Log.d(TAG, "DetailActivity.onCreate mDb =" + mDb);
 
         //Extract movie properties from Intent
         movieId = intent.getStringExtra("id");
@@ -203,15 +206,40 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         favoritesToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                //RUN ONCE
+               // Log.d(TAG, "onCheckedChanged: DELETING ALL FAVORITES - REMOVE THIS CODE AFTER DEBUGGING");
+             //   mDb.favoriteDao().deleteAllFavorite();
+                //
+
                 if(isChecked ){
                     // make this a favorite
-                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
-                    //Add to database
-                    FavoriteEntry favoriteEntry = new FavoriteEntry(movieId,movieTitle);
-                    mDb.favoriteDao.insertFavorite(favoriteEntry);
-                    finish();
-                } else {
                     favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
+                   // FavoriteEntry favoriteEntry = new FavoriteEntry(movieId,movieTitle);
+                    //IF already in DB, then nothing to do
+                    FavoriteEntry favoriteEntry = mDb.favoriteDao().loadFavoriteById(movieId);
+                    if (favoriteEntry == null) { //does NOT exist
+                        //Add to database
+                        favoriteEntry = new FavoriteEntry(movieId,movieTitle);
+                        mDb.favoriteDao().insertFavorite(favoriteEntry);
+                        Log.d(TAG, "onCheckedChanged: Make Favorite.  movieid=" + favoriteEntry.getMovieId()+" title="+favoriteEntry.getMovieTitle());
+
+                    } else {
+                        //EXISTS
+                        Log.d(TAG, "onCheckedChanged: ALREADY IN DB  movieid=" + favoriteEntry.getMovieId()+" title="+favoriteEntry.getMovieTitle());
+                    }
+                    // finish();
+
+                } else {
+                    //Remove from DB
+                    mDb.favoriteDao().deleteFavoriteById(movieId);
+                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
+                    Log.d(TAG, "onCheckedChanged: Delete from DB and Make NOT Favorite");
+                }
+
+                List<FavoriteEntry> favs = mDb.favoriteDao().loadAllFavorites();
+                for (FavoriteEntry fEntry: favs
+                     ) {
+                    Log.d(TAG, "   movieid("+fEntry.getMovieId()+") title("+fEntry.getMovieTitle()+")");
                 }
             }
         });

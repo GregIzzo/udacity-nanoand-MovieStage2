@@ -10,11 +10,11 @@ import android.util.Log;
  * Created by Greg on 6/22/2018.
  */
 
-@Database(entities = {FavoriteEntry.class}, version = 1, exportSchema = false)
+@Database(entities = {FavoriteEntry.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();
-    private static final String DATABASE_NAME = "favorites";
+    private static final String DATABASE_NAME = "favorite";
     private static AppDatabase sInstance;
 
     public static AppDatabase getsInstance(Context context){
@@ -23,6 +23,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 Log.d(LOG_TAG, "Creating new database instance: ");
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
+                        .fallbackToDestructiveMigration()
                         //TEMPORARY -
                         .allowMainThreadQueries()
                         .build();
@@ -32,7 +33,7 @@ public abstract class AppDatabase extends RoomDatabase {
         return sInstance;
     }
 
-    public FavoriteDao favoriteDao;
+    public abstract FavoriteDao favoriteDao();
 
 }
 

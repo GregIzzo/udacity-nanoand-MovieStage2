@@ -16,8 +16,11 @@ import java.util.List;
 @Dao
 public interface FavoriteDao {
 
-    @Query("Select * From favorite ORDER BY id")
+    @Query("Select * From favorite ORDER BY movieId")
     List<FavoriteEntry> loadAllFavorites();
+
+    @Query("Select * From favorite where movieId = :whatId")
+    FavoriteEntry loadFavoriteById(String whatId);
 
     @Insert
     void insertFavorite(FavoriteEntry favoriteEntry);
@@ -25,6 +28,14 @@ public interface FavoriteDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateFavorite(FavoriteEntry favoriteEntry);
 
+    @Query("DELETE FROM favorite WHERE movieId = :whatId")
+    void deleteFavoriteById(String whatId);
+
     @Delete
     void deleteFavorite(FavoriteEntry favoriteEntry);
+
+    @Query("DELETE FROM favorite")
+    void deleteAllFavorite();
+
+
 }
