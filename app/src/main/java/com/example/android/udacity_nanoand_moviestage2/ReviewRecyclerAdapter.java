@@ -55,7 +55,6 @@ public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAd
         public ReviewAdapterViewHolder( View itemView) {
 
             super(itemView);
-            Log.i(TAG, "ReviewAdapterViewHolder: !!! CREATOR!!!");
             listItemReviewView =  itemView.findViewById(R.id.iv_item_review);
             listItemAuthorView = itemView.findViewById(R.id.tv_author_review);
             listItemContentView = itemView.findViewById(R.id.tv_content_review);
@@ -143,7 +142,6 @@ public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAd
             String id = jObj.getString("id");
             String url = jObj.getString("url");
 
-            Log.i(TAG, " GGonBindViewHolder (Review): POSITION="+position+ " author=" + author + " id="+ id + " url="+url);
             ReviewAdapterViewHolder.listItemReviewView.setImageResource(R.mipmap.ic_heart);
             ReviewAdapterViewHolder.listItemAuthorView.setText(author);
             ReviewAdapterViewHolder.listItemContentView.setText(content_bit);

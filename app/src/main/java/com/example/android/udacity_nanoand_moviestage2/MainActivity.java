@@ -1,9 +1,12 @@
 package com.example.android.udacity_nanoand_moviestage2;
 
 //import android.content.Context;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 //import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
@@ -27,6 +30,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.example.android.udacity_nanoand_moviestage2.database.AppDatabase;
+import com.example.android.udacity_nanoand_moviestage2.database.FavoriteEntry;
 import com.example.android.udacity_nanoand_moviestage2.utilities.NetworkUtils;
 //import com.squareup.picasso.Picasso;
 
@@ -34,10 +39,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderCallbacks<String>, MovieRecyclerAdapter.MovieAdapterOnClickHandler, CompoundButton.OnCheckedChangeListener {
 
+    private static final String TAG = "MAINACTIVITY";
     private String mMovieData = null;
     private static final int MOVIE_LOADER_ID= 22;
     private RecyclerView mRecyclerView;
@@ -45,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private boolean sortByPopular = false;
     private ProgressBar loadingIndicator;
     private TextView errorMessageDisplay;
+    private AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +94,9 @@ public class MainActivity extends AppCompatActivity
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(movieRecyclerAdapter);
         getSupportLoaderManager().initLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+
+        mDb = AppDatabase.getsInstance(getApplicationContext());
+        retrieveFavorites();
     }
 /*
     @Override
@@ -242,6 +253,24 @@ public class MainActivity extends AppCompatActivity
         mMovieData = null;
         invalidateData();
         getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    private void retrieveFavorites(){
+        //Using LiveData instead of Executor because LiveData runs in a separate thread, and will keep track of changes
+
+        final LiveData<List<FavoriteEntry>> favorites = mDb.favoriteDao().loadAllFavorites();
+        favorites.observe(this, new Observer<List<FavoriteEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
+                Log.d(TAG, "Actively retrieving the favorites from the DataBase");
+                //mAdapter.setFavorites(favoriteEntries);
+            }
+        });
     }
 
 }

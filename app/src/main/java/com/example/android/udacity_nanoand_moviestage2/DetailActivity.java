@@ -40,8 +40,6 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 public class DetailActivity extends AppCompatActivity implements VideoRecyclerAdapter.VideoAdapterOnClickHandler, ReviewRecyclerAdapter.ReviewAdapterOnClickHandler {
 /*
 TO DO
@@ -86,6 +84,8 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     private PopupWindow popup;
     private ConstraintLayout sv_detailscreen;
     private AppDatabase mDb;
+
+    private boolean favoriteEntryExists = false;//not Null when there is already a FavoriteEntry object in the DB for current movieid
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,48 +201,6 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
         if (favoritesToggle == null) favoritesToggle = findViewById(R.id.favorite_tb);//get favorite 'heart'
 
-        favoritesToggle.setChecked(false);//set it to false TEMPORARILY. NEED TO READ DATABASE TO KNOW WHAT TO SET THIS TO
-        favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
-        favoritesToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                //RUN ONCE
-               // Log.d(TAG, "onCheckedChanged: DELETING ALL FAVORITES - REMOVE THIS CODE AFTER DEBUGGING");
-             //   mDb.favoriteDao().deleteAllFavorite();
-                //
-
-                if(isChecked ){
-                    // make this a favorite
-                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
-                   // FavoriteEntry favoriteEntry = new FavoriteEntry(movieId,movieTitle);
-                    //IF already in DB, then nothing to do
-                    FavoriteEntry favoriteEntry = mDb.favoriteDao().loadFavoriteById(movieId);
-                    if (favoriteEntry == null) { //does NOT exist
-                        //Add to database
-                        favoriteEntry = new FavoriteEntry(movieId,movieTitle);
-                        mDb.favoriteDao().insertFavorite(favoriteEntry);
-                        Log.d(TAG, "onCheckedChanged: Make Favorite.  movieid=" + favoriteEntry.getMovieId()+" title="+favoriteEntry.getMovieTitle());
-
-                    } else {
-                        //EXISTS
-                        Log.d(TAG, "onCheckedChanged: ALREADY IN DB  movieid=" + favoriteEntry.getMovieId()+" title="+favoriteEntry.getMovieTitle());
-                    }
-                    // finish();
-
-                } else {
-                    //Remove from DB
-                    mDb.favoriteDao().deleteFavoriteById(movieId);
-                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
-                    Log.d(TAG, "onCheckedChanged: Delete from DB and Make NOT Favorite");
-                }
-
-                List<FavoriteEntry> favs = mDb.favoriteDao().loadAllFavorites();
-                for (FavoriteEntry fEntry: favs
-                     ) {
-                    Log.d(TAG, "   movieid("+fEntry.getMovieId()+") title("+fEntry.getMovieTitle()+")");
-                }
-            }
-        });
         if (year_tv == null) year_tv =  findViewById(R.id.year_tv);
         String releaseText = getString(R.string.yearReleased_label) + DataUtilities.getFormattedDate(movieReleaseDate);
         year_tv.setText(releaseText);
@@ -261,8 +219,99 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         //Load Videos and Reviews data
         sv_detailscreen = findViewById(R.id.cl_detailmain);
 
+
+        setupFavoriteButton();
     }
 
+    private void setupFavoriteButton() {
+        Log.d(TAG, "setupFavoriteButton: calling readFavoriteEntry");
+        readFavoriteEntry();//use MovieID to retreive FavoriteEntry from db (if it exists)
+
+        favoritesToggle.setChecked(favoriteEntryExists);
+        favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
+        favoritesToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                 if(isChecked ){
+                    // make this a favorite
+                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_black_24dp));
+                    if (! favoriteEntryExists) { //does NOT exist
+                        //Add to database
+                        addFavoriteEntry();
+                        Log.d(TAG, "onCheckedChanged: Make Favorite.  movieid=" + movieId+" title="+movieTitle);
+                    } else {
+                        //Already in the DB, so there is nothing to do
+                        Log.d(TAG, "onCheckedChanged: ALREADY IN DB  movieid=" + movieId+" title="+movieTitle);
+                    }
+                } else {
+                    //Remove from DB
+                    removeFavoriteEntry();
+                    favoritesToggle.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_favorite_border_black_24dp));
+                    Log.d(TAG, "onCheckedChanged: Delete from DB and Make NOT Favorite");
+                }
+            }
+        });
+    }
+    private void readFavoriteEntry(){
+        //use MovieId to lookup FavoriteEntry for this movie
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final FavoriteEntry existingFE = mDb.favoriteDao().loadFavoriteById(movieId);
+                Log.d(TAG, "readFavoriteEntry: loading db record for movieid=" + movieId+" fe=" + existingFE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setFavoriteEntryExists(existingFE );
+                    }
+                });
+
+            }
+        });
+    }
+    private void setFavoriteEntryExists(FavoriteEntry fe){
+        //keep track of the FavoriteEntry object for this activity
+        if (fe == null) {
+            favoriteEntryExists = false;
+            Log.d(TAG, "setFavoriteEntryExists: fe passed in =" + fe +" FALSE");
+        } else {
+            favoriteEntryExists = true;
+            Log.d(TAG, "setFavoriteEntryExists: fe passed in =" + fe +" TRUE");
+        }
+        favoritesToggle.setChecked(favoriteEntryExists);
+    }
+    private void addFavoriteEntry(){
+        //update (or create) FavoriteEntry for current movie
+        final FavoriteEntry favoriteEntry = new FavoriteEntry(movieId,movieTitle);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.favoriteDao().insertFavorite(favoriteEntry);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setFavoriteEntryExists(favoriteEntry);
+                    }
+                });
+
+            }
+        });
+    }
+    private void removeFavoriteEntry(){
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.favoriteDao().deleteFavoriteById(movieId);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setFavoriteEntryExists(null);
+                    }
+                });
+            }
+        });
+
+    }
     @Override
     public void onClick(int type, String movieData) throws JSONException {
         Log.i(TAG, "onClick: type="+ type+" data=" + movieData);
