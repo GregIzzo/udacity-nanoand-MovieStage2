@@ -15,13 +15,14 @@ public class FavoriteEntry {
 
     @PrimaryKey @NonNull
     private String movieId;
-
     private String movieTitle;
+    private String movieJSONString;
 
 
-    public FavoriteEntry(String movieId, String movieTitle){
+    public FavoriteEntry(String movieId, String movieTitle, String movieJSONString){
         this.movieId = movieId;
         this.movieTitle = movieTitle;
+        this.movieJSONString = movieJSONString;
     }
      //Getters and Setters
     public String getMovieId() { return this.movieId;}
@@ -29,5 +30,8 @@ public class FavoriteEntry {
 
     public String getMovieTitle() { return this.movieTitle;}
     public void setMovieTitle(String title) { this.movieTitle = title;}
+
+    public String getMovieJSONString() { return this.movieJSONString;}
+    public void setMovieJSONString(String jsonString) {this.movieJSONString = jsonString;}
 
 }

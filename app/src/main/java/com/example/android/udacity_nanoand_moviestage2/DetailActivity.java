@@ -72,6 +72,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     private String movieOverview;
     private Double moviePopularity;
     private Double movieVoteAve;
+    private String movieJSONString;
     private String detailData;
     private JSONObject videoJSON;
     private JSONObject reviewJSON;
@@ -106,6 +107,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
         movieOverview = intent.getStringExtra("overview");
         moviePopularity = intent.getDoubleExtra("popularity",0);
         movieVoteAve = intent.getDoubleExtra("vote_average",0);
+        movieJSONString = intent.getStringExtra("json");
 
         /*
         CHECK CUSTOM DB FOR DATA. IF CURRENT MOVIEID EXISTS THERE, USE THAT DATA INSTEAD OF TRIGGERING LOAD
@@ -282,7 +284,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     }
     private void addFavoriteEntry(){
         //update (or create) FavoriteEntry for current movie
-        final FavoriteEntry favoriteEntry = new FavoriteEntry(movieId,movieTitle);
+        final FavoriteEntry favoriteEntry = new FavoriteEntry(movieId, movieTitle, movieJSONString);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {

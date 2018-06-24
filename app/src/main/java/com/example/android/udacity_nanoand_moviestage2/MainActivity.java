@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
 //import android.net.Uri;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -40,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -50,16 +52,32 @@ public class MainActivity extends AppCompatActivity
     private static final int MOVIE_LOADER_ID= 22;
     private RecyclerView mRecyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
-    private int sortBy = 1; //1=top rated, 2=popularity, 3=favorites
+    private int sortBy=1; //1=top rated, 2=popularity, 3=favorites
     private ProgressBar loadingIndicator;
     private TextView errorMessageDisplay;
     RadioGroup mRadioGroup;
     private AppDatabase mDb;
+    private String favoritesJSONData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null){
+            if (savedInstanceState.containsKey("favorites")){
+                favoritesJSONData = savedInstanceState.getString("favorites");
+            }
+            if (savedInstanceState.containsKey("sortby")){
+                sortBy = savedInstanceState.getInt("sortby");
+            }
+            if (savedInstanceState.containsKey("mMovieData")){
+                mMovieData = savedInstanceState.getString("mMovieData");
+            }
+            Log.d(TAG, "onRestoreInstanceState: sortby="+sortBy+" favoritesJSONData="+favoritesJSONData);
 
+        } else {
+            favoritesJSONData = "";
+            sortBy = 1;
+        }
         setContentView(R.layout.activity_main);
 
         //Setup NetworkUtils with context so it can read the api key from res/values/keys.xml
@@ -70,26 +88,39 @@ public class MainActivity extends AppCompatActivity
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int whatId) {
+
                 switch(whatId){
                     case R.id.radButton1: //Top Rated
-                        sortBy = 1;
-                        mMovieData = null;
-                        invalidateData();
-                        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+
+                        Log.d(TAG, "onCheckedChanged: RadioGroup Changed button 1 sortBy=" +sortBy);
+                        if (sortBy != 1) {
+                            sortBy = 1;
+                            mMovieData = null;
+                            invalidateData();
+                            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this);
+                        }
                         break;
                     case R.id.radButton2: //Popularity
-                        sortBy = 2;
-                        mMovieData = null;
-                        invalidateData();
-                        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+                        Log.d(TAG, "onCheckedChanged: RadioGroup Changed button 2 sortBy=" +sortBy);
+                        if (sortBy != 2) {
+                            sortBy = 2;
+                            mMovieData = null;
+                            invalidateData();
+                            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this);
+                        }
                         break;
                     case R.id.radButton3: //Favorites
-                        sortBy = 3;
-                        //get favorites data as JSON
-                        // mMovieData = JSONDATA
-                        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+                        Log.d(TAG, "onCheckedChanged: RadioGroup Changed button 3. favoritesJSONData=" + favoritesJSONData +"  sortBy=" +sortBy);
+                        if (sortBy != 3) {
+                            sortBy = 3;
+                            //get favorites data as JSON
+                            // mMovieData = JSONDATA
+                            mMovieData = favoritesJSONData;
+                            getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this);
+                        }
                         break;
                     default:
+                        Log.d(TAG, "onCheckedChanged: RadioGroup Changed (DEFAULT) whatid=" + whatId);
                         sortBy = 0;
                         break;
 
@@ -112,35 +143,6 @@ public class MainActivity extends AppCompatActivity
         mDb = AppDatabase.getsInstance(getApplicationContext());
         retrieveFavorites();
     }
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i("GGG", "------ ------ ----- onCreateOptionsMenu: ");
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-
-        MenuItem item = menu.findItem(R.id.myswitch);
-        item.setActionView(R.layout.switch_layout);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i("GGGG", "@@@@@@ onOptionsItemSelected: ");
-        switch (item.getItemId()) {
-            case R.id.sortSwitchForActionBar://  R.id.action_sort:
-                Log.i("GGGG", "@@@@@@ action_sort ");
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-        }
-    }
-*/
     @Override
     public @NonNull Loader<String> onCreateLoader(int i, Bundle bundle) {
         //Start the loader in the background
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity
                     case 2:
                         searchUrl = NetworkUtils.buildPopularURL();
                         break;
+
                     default:
                         searchUrl = null;
                 }
@@ -173,6 +176,7 @@ public class MainActivity extends AppCompatActivity
             protected void onStartLoading() {
                 Log.d(TAG, "onStartLoading: ***** onStartLoading ******");
                 if (mMovieData != null) {
+                    Log.d(TAG, "onStartLoading: mMovieData NOT null:" + mMovieData.length());
                     deliverResult(mMovieData);
                 } else {
                     loadingIndicator.setVisibility(View.VISIBLE);
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity
                 if (data == null) {
                  //   Log.i("GREGOUT", "#####  deliverResult #####: data.length=0 (null) " );
                 } else {
-                    Log.i("GREGOUT", "#####  deliverResult #####: data.length " + data.length());
+                    Log.d("GREGOUT", "#####  deliverResult #####: data.length " + data.length());
                     mMovieData = data;
                     //Turn it to a json object:
 
@@ -201,6 +205,7 @@ public class MainActivity extends AppCompatActivity
             showErrorMessage();
             loadingIndicator.setVisibility(View.GONE);
         } else {
+
             movieRecyclerAdapter.setMovieData(s);
             showMovieDataView();
         }
@@ -208,11 +213,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoaderReset(@NonNull Loader<String> loader) {
-      //  Log.i("GREGOUT", "onLoaderReset: ******************* ");
+       Log.d("GREGOUT", "onLoaderReset: ******************* ");
     }
 
     private void startMovieDataLoad() {
-        Log.i("GREGOUT", " ########## startMovieDataLoad: ");
+        Log.d("GREGOUT", " ########## startMovieDataLoad: ");
          // Call getSupportLoaderManager and store it in a LoaderManager variable
         LoaderManager loaderManager = getSupportLoaderManager();
         // Get our Loader by calling getLoader and passing the ID we specified
@@ -227,7 +232,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(String movieData) throws JSONException {
-      //  Log.i("TAG", "######onClick: "+movieData);
+      //  Log.d("TAG", "######onClick: "+movieData);
         Intent movieDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
         //Movie details layout contains
         // //title,
@@ -273,6 +278,28 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "onSaveInstanceState: favoritesJSONData="+favoritesJSONData);
+        outState.putString("favorites",favoritesJSONData );
+        outState.putInt("sortby", sortBy);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState.containsKey("favorites")){
+            favoritesJSONData = savedInstanceState.getString("favorites");
+        }
+        if (savedInstanceState.containsKey("sortby")){
+            sortBy = savedInstanceState.getInt("sortby");
+        }
+        Log.d(TAG, "onRestoreInstanceState: sortby="+sortBy+" favoritesJSONData="+favoritesJSONData);
+    }
+
     private void retrieveFavorites(){
         //Using LiveData instead of Executor because LiveData runs in a separate thread, and will keep track of changes
 
@@ -281,9 +308,31 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
                 Log.d(TAG, "Actively retrieving the favorites from the DataBase");
-                //mAdapter.setFavorites(favoriteEntries);
+                setFavoritesJSONdata(favoriteEntries);
             }
         });
+    }
+    private void setFavoritesJSONdata(List<FavoriteEntry> favoriteEntries) {
+        Log.d(TAG, "setFavoritesJSONdata: *** CLEARING favoritesJSONData");
+        favoritesJSONData = "";
+        String innerData = "";
+        Iterator<FavoriteEntry> iterator = favoriteEntries.iterator();
+        while (iterator.hasNext()) {
+            if (innerData == "") {
+                innerData = iterator.next().getMovieJSONString();
+            } else {
+                innerData = innerData + "," +  iterator.next().getMovieJSONString();
+            }
+        }
+        favoritesJSONData = " { \"results\" : [" + innerData + "] }";
+
+        //combine json data from each entry into a json string of the form:
+        //   { "results" : [
+        //                   <entryJSONSTRING 1>  ,
+        //                   <entryJSONSTRING 2> ,
+        //                   ...
+        //                  ]
+        //   }
     }
 
 }

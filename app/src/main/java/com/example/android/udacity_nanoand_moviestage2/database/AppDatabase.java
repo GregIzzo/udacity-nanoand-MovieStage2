@@ -10,7 +10,7 @@ import android.util.Log;
  * Created by Greg on 6/22/2018.
  */
 
-@Database(entities = {FavoriteEntry.class}, version = 2, exportSchema = false)
+@Database(entities = {FavoriteEntry.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();
