@@ -10,4 +10,9 @@
     <color name="colorShape">#1133EE</color>
     <color name="favoriteOn">#FF000000</color>
     <color name="favoriteOff">#88888800</color>
+
+    <!-- colors main sort bar selection -->
+    <color name="materialRed">#E74C3C</color>
+    <color name="materialOrange">#E67E22</color>
+    <color name="materialYellow">#F1C40F</color>
 </resources>

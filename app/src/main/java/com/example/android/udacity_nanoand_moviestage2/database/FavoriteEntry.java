@@ -15,6 +15,7 @@ public class FavoriteEntry {
 
     @PrimaryKey @NonNull
     private String movieId;
+
     private String movieTitle;
 
 

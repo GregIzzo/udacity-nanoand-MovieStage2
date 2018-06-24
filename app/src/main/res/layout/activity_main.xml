@@ -7,19 +7,45 @@
     android:orientation="vertical"
     android:background="@color/colorBackground">
 
+    <!-- RadioGroup for visible selection of a priority -->
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:orientation="horizontal"
+        android:weightSum="3">
 
+        <RadioButton
+            android:id="@+id/radButton1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/materialRed"
+            android:checked="true"
+            android:text="@string/rb_toprated_text"
+            android:theme="@style/WhiteRadioButton" />
 
+        <RadioButton
+            android:id="@+id/radButton2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/materialOrange"
+            android:text="@string/rb_popularity_text"
+            android:theme="@style/WhiteRadioButton" />
 
-    <ToggleButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/toggle_button"
-        android:text="@string/switch_label"
-        android:textOff="@string/switch_off_text"
-        android:textOn="@string/switch_on_text"
-        />
+        <RadioButton
+            android:id="@+id/radButton3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/materialYellow"
+            android:text="@string/rb_favorites_text"
+            android:theme="@style/WhiteRadioButton" />
 
+    </RadioGroup>
 
     <TextView
         android:id="@+id/tv_error_message_display"

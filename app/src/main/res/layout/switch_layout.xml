@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/switch_label"
-        android:textOff="@string/switch_off_text"
-        android:textOn="@string/switch_on_text"
+        android:textOff="@string/rb_toprated_text"
+        android:textOn="@string/rb_popularity_text"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
      android:textAlignment="center"
@@ -22,7 +22,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/switch_on_text"
+        android:text="@string/rb_popularity_text"
         android:layout_alignParentRight="true"
 
         android:layout_alignParentEnd="true" />

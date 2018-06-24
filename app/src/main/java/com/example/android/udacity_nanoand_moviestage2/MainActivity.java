@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 //import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -42,16 +43,17 @@ import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements LoaderCallbacks<String>, MovieRecyclerAdapter.MovieAdapterOnClickHandler, CompoundButton.OnCheckedChangeListener {
+        implements LoaderCallbacks<String>, MovieRecyclerAdapter.MovieAdapterOnClickHandler {
 
     private static final String TAG = "MAINACTIVITY";
     private String mMovieData = null;
     private static final int MOVIE_LOADER_ID= 22;
     private RecyclerView mRecyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
-    private boolean sortByPopular = false;
+    private int sortBy = 1; //1=top rated, 2=popularity, 3=favorites
     private ProgressBar loadingIndicator;
     private TextView errorMessageDisplay;
+    RadioGroup mRadioGroup;
     private AppDatabase mDb;
 
     @Override
@@ -62,27 +64,39 @@ public class MainActivity extends AppCompatActivity
 
         //Setup NetworkUtils with context so it can read the api key from res/values/keys.xml
         NetworkUtils.setup(this);
-        //Setup Toolbar/Action bar which has a button for changing sort: Popularity vs top_rated
-
-        /* TextView used to display errors. Invisible until error */
         errorMessageDisplay =  findViewById(R.id.tv_error_message_display);
         loadingIndicator =  findViewById(R.id.pb_loading_anim);
-        // Menu is inflated in the method 'onCreateOptionsMenu'
+        mRadioGroup = findViewById(R.id.radioGroup);
+        mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int whatId) {
+                switch(whatId){
+                    case R.id.radButton1: //Top Rated
+                        sortBy = 1;
+                        mMovieData = null;
+                        invalidateData();
+                        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+                        break;
+                    case R.id.radButton2: //Popularity
+                        sortBy = 2;
+                        mMovieData = null;
+                        invalidateData();
+                        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+                        break;
+                    case R.id.radButton3: //Favorites
+                        sortBy = 3;
+                        //get favorites data as JSON
+                        // mMovieData = JSONDATA
+                        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
+                        break;
+                    default:
+                        sortBy = 0;
+                        break;
 
-        ToggleButton sortSelectButton = findViewById(R.id.toggle_button);
-        if (sortSelectButton != null) {
-           // sortSelectButton.setOnCheckedChangeListener(this);
-            sortSelectButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                   sortByPopular =  ((ToggleButton)view).isChecked();
-                    mMovieData = null;
-                    invalidateData();
-                    getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
                 }
-            });
-        }
 
+            }
+        });
 
         //Get ImageView on main screen (activity_main)
         mRecyclerView =  findViewById(R.id.rv_movies);
@@ -135,13 +149,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public String loadInBackground() {
                 URL searchUrl;
-                if (sortByPopular){
-                    searchUrl = NetworkUtils.buildPopularURL();
-
-                } else {
-                    searchUrl = NetworkUtils.buildTopRatedURL();
+                switch(sortBy){
+                    case 1:
+                        searchUrl = NetworkUtils.buildTopRatedURL();
+                    break;
+                    case 2:
+                        searchUrl = NetworkUtils.buildPopularURL();
+                        break;
+                    default:
+                        searchUrl = null;
                 }
-                try {
+                 try {
                      return NetworkUtils
                             .getResponseFromHttpUrl(searchUrl);
 
@@ -153,6 +171,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             protected void onStartLoading() {
+                Log.d(TAG, "onStartLoading: ***** onStartLoading ******");
                 if (mMovieData != null) {
                     deliverResult(mMovieData);
                 } else {
@@ -164,7 +183,7 @@ public class MainActivity extends AppCompatActivity
                 if (data == null) {
                  //   Log.i("GREGOUT", "#####  deliverResult #####: data.length=0 (null) " );
                 } else {
-                 //   Log.i("GREGOUT", "#####  deliverResult #####: data.length " + data.length());
+                    Log.i("GREGOUT", "#####  deliverResult #####: data.length " + data.length());
                     mMovieData = data;
                     //Turn it to a json object:
 
@@ -224,6 +243,7 @@ public class MainActivity extends AppCompatActivity
         movieDetailIntent.putExtra("vote_average",reader.getDouble("vote_average") );
         movieDetailIntent.putExtra("popularity",reader.getDouble("popularity") );
         movieDetailIntent.putExtra("overview",reader.getString("overview") );
+        movieDetailIntent.putExtra("json", movieData);
         startActivity(movieDetailIntent);
 
     }
@@ -247,13 +267,6 @@ public class MainActivity extends AppCompatActivity
         errorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        sortByPopular = b;
-        mMovieData = null;
-        invalidateData();
-        getSupportLoaderManager().restartLoader(MOVIE_LOADER_ID, null, MainActivity.this );
-    }
 
     @Override
     protected void onResume() {
