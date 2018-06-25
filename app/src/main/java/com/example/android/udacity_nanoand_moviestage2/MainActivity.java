@@ -3,6 +3,8 @@ package com.example.android.udacity_nanoand_moviestage2;
 //import android.content.Context;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 //import android.net.Uri;
 import android.os.PersistableBundle;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity
             if (savedInstanceState.containsKey("mMovieData")){
                 mMovieData = savedInstanceState.getString("mMovieData");
             }
-            Log.d(TAG, "onRestoreInstanceState: sortby="+sortBy+" favoritesJSONData="+favoritesJSONData);
+            Log.d(TAG, "onCreate : sortby="+sortBy+" favoritesJSONData="+favoritesJSONData);
 
         } else {
             favoritesJSONData = "";
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity
         errorMessageDisplay =  findViewById(R.id.tv_error_message_display);
         loadingIndicator =  findViewById(R.id.pb_loading_anim);
         mRadioGroup = findViewById(R.id.radioGroup);
+        setSortButtonOn(sortBy);
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int whatId) {
@@ -272,10 +275,23 @@ public class MainActivity extends AppCompatActivity
         errorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        getIntent().putExtra("sortby", sortBy);
+        getIntent().putExtra("favorites",favoritesJSONData );
+
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: sortby: " + sortBy);
+        if (getIntent() != null ){
+            sortBy = getIntent().getIntExtra("sortby", 1);
+            favoritesJSONData = getIntent().getStringExtra("favorites");
+        }
+        setSortButtonOn(sortBy);
     }
 
     @Override
@@ -300,19 +316,21 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onRestoreInstanceState: sortby="+sortBy+" favoritesJSONData="+favoritesJSONData);
     }
 
-    private void retrieveFavorites(){
-        //Using LiveData instead of Executor because LiveData runs in a separate thread, and will keep track of changes
+    private void retrieveFavorites() {
+        //using ViewModel to allow the database data to persist on rotation
 
-        final LiveData<List<FavoriteEntry>> favorites = mDb.favoriteDao().loadAllFavorites();
-        favorites.observe(this, new Observer<List<FavoriteEntry>>() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getFavorites().observe(this, new Observer<List<FavoriteEntry>>() {
             @Override
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
-                Log.d(TAG, "Actively retrieving the favorites from the DataBase");
+                Log.d(TAG, "onChanged: Updating Favorites json string");
                 setFavoritesJSONdata(favoriteEntries);
             }
         });
     }
-    private void setFavoritesJSONdata(List<FavoriteEntry> favoriteEntries) {
+
+
+     private void setFavoritesJSONdata(List<FavoriteEntry> favoriteEntries) {
         Log.d(TAG, "setFavoritesJSONdata: *** CLEARING favoritesJSONData");
         favoritesJSONData = "";
         String innerData = "";
@@ -325,6 +343,9 @@ public class MainActivity extends AppCompatActivity
             }
         }
         favoritesJSONData = " { \"results\" : [" + innerData + "] }";
+        if (sortBy == 3)
+             movieRecyclerAdapter.setMovieData(favoritesJSONData);
+         showMovieDataView();
 
         //combine json data from each entry into a json string of the form:
         //   { "results" : [
@@ -333,6 +354,21 @@ public class MainActivity extends AppCompatActivity
         //                   ...
         //                  ]
         //   }
+
+    }
+    private void setSortButtonOn(int whatSortby){
+        switch(whatSortby) {
+            case 1: //left most
+                mRadioGroup.check(R.id.radButton1);
+                break;
+            case 2:
+                mRadioGroup.check(R.id.radButton2);
+                break;
+            case 3:
+                mRadioGroup.check(R.id.radButton3);
+                break;
+
+        }
     }
 
 }
