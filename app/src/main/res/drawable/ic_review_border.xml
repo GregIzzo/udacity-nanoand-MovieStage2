@@ -10,6 +10,6 @@
         android:width="3dp"
         android:color="#2048d9" />
     <solid
-        android:color="#2048d9" />
+        android:color="@color/colorShape" />
 
 </shape>
