@@ -19,4 +19,9 @@
         <item name="colorControlActivated">@android:color/white</item>
     </style>
 
+    <style name="myRatingBar" parent="Widget.AppCompat.RatingBar">
+        <item name="colorAccent">#04bad6</item>
+        <item name="android:colorControlNormal">#767675</item>
+    </style>
+
 </resources>

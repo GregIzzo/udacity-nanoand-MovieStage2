@@ -5,6 +5,7 @@
     android:layout_height="fill_parent"
     android:background="@drawable/shape_rectangle_dim"
 
+
     >
 
     <LinearLayout
@@ -12,7 +13,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="#2048d9"
+
+        android:background="@drawable/ic_review_border"
         android:layout_margin="16dp"
         android:padding="2dp">
 
@@ -23,7 +25,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:background="@color/colorShape"
-            android:src="@mipmap/ic_sun"
+            android:src="@drawable/ic_cancel_black_24dp"
 
             />
 

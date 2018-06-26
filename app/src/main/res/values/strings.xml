@@ -4,7 +4,7 @@
     <string name="switch_label">Sort By</string>
     <string name="rb_popularity_text">Popularity</string>
     <string name="rb_toprated_text">Top Rated</string>
-    <string name="rb_favorites_text">Favorties</string>
+    <string name="rb_favorites_text">Favorites</string>
 
     <string name="yearReleased_label">Release Date:\u0020</string>
 
@@ -15,5 +15,7 @@
     <string name="poster_cd">Movie Poster</string>
     <string name="video_cd">Movie Video</string>
     <string name="review_cd">Movie Review</string>
+    <string name="no_videos">No Preview Videos</string>
+    <string name="no_reviews">No Reviews</string>
 
 </resources>

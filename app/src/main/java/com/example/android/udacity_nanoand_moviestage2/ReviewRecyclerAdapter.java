@@ -33,6 +33,7 @@ public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAd
     private JSONObject reader = null;
     private  JSONArray resArray=null;
 
+
     public interface ReviewAdapterOnClickHandler {
         void onClick(int type, String movieData) throws JSONException;
     }
@@ -142,7 +143,7 @@ public class ReviewRecyclerAdapter extends RecyclerView.Adapter<ReviewRecyclerAd
             String id = jObj.getString("id");
             String url = jObj.getString("url");
 
-            ReviewAdapterViewHolder.listItemReviewView.setImageResource(R.mipmap.ic_heart);
+           // ReviewAdapterViewHolder.listItemReviewView.setImageResource(R.mipmap.ic_heart);
             ReviewAdapterViewHolder.listItemAuthorView.setText(author);
             ReviewAdapterViewHolder.listItemContentView.setText(content_bit);
 

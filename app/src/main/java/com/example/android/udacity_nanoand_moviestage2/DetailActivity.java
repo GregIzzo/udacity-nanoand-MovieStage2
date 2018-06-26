@@ -78,9 +78,11 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     private JSONObject reviewJSON;
 
     private RecyclerView mVideoRecyclerView;
+    private TextView mNoVideosView;
     private VideoRecyclerAdapter videoRecyclerAdapter;
 
     private RecyclerView mReviewRecyclerView;
+    private TextView mNoReviewsView;
     private ReviewRecyclerAdapter reviewRecyclerAdapter;
     private PopupWindow popup;
     private ConstraintLayout sv_detailscreen;
@@ -116,7 +118,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
         //Get ImageView on detail screen
         mVideoRecyclerView =  findViewById(R.id.rv_videos);
-
+        mNoVideosView = findViewById(R.id.empty_videos_view);
         RecyclerView.LayoutManager mVideoLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false); //new GridLayoutManager(this, 1);
         mVideoRecyclerView.setLayoutManager(mVideoLayoutManager);
         videoRecyclerAdapter = new VideoRecyclerAdapter(this );
@@ -126,7 +128,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
         //Reviews
         mReviewRecyclerView =  findViewById(R.id.rv_reviews);
-
+        mNoReviewsView = findViewById(R.id.empty_reviews_view);
         RecyclerView.LayoutManager mReviewLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false); //new GridLayoutManager(this, 1);
         mReviewRecyclerView.setLayoutManager(mReviewLayoutManager);
         reviewRecyclerAdapter = new ReviewRecyclerAdapter(this );
@@ -146,16 +148,27 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
             @Override
             public void onLoadFinished(@NonNull Loader<String> loader, String data) {
-                if (data == null){
+
+                if (data == null || data == ""){
+                    mNoVideosView.setVisibility(View.VISIBLE);
+                    mVideoRecyclerView.setVisibility(View.GONE);
+
                     return;
                 }
-                Log.i(TAG, "onLoadFinished: VideoData="+data);
+
                 try {
                     videoJSON = new JSONObject(data);
                     videoRecyclerAdapter.setVideoData(data);
                     //showMovieDataView();
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                if (videoRecyclerAdapter.getItemCount() >0){
+                    mNoVideosView.setVisibility(View.GONE);
+                    mVideoRecyclerView.setVisibility(View.VISIBLE);
+                } else {
+                    mNoVideosView.setVisibility(View.VISIBLE);
+                    mVideoRecyclerView.setVisibility(View.GONE);
                 }
             }
 
@@ -176,15 +189,25 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
             @Override
             public void onLoadFinished(@NonNull Loader<String> loader, String data) {
-                if (data == null){
+
+                if (data == null || data == ""){
+                    mNoReviewsView.setVisibility(View.VISIBLE);
+                    mReviewRecyclerView.setVisibility(View.GONE);
                     return;
                 }
-                Log.i(TAG, "onLoadFinished: ReviewData="+data);
+
                 try {
                     reviewJSON = new JSONObject(data);
                     reviewRecyclerAdapter.setReviewData(data);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                if (reviewRecyclerAdapter.getItemCount() >0){
+                    mNoReviewsView.setVisibility(View.GONE);
+                    mReviewRecyclerView.setVisibility(View.VISIBLE);
+                } else {
+                    mNoReviewsView.setVisibility(View.VISIBLE);
+                    mReviewRecyclerView.setVisibility(View.GONE);
                 }
             }
 

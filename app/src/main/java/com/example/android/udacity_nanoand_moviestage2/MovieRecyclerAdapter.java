@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 //import android.util.Log;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,27 +110,26 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
             String posterPath = jObj.getString("poster_path");
 
             String imurl = "https://image.tmdb.org/t/p/w500" + posterPath;
+            Log.d("ZZZZ", "onBindViewHolder: imurl="+imurl);
 
-            Picasso.with(viewGroupContext).load(imurl).into(movieAdapterViewHolder.listItemMovieView);
+            Picasso.with(viewGroupContext)
+                    .load(imurl)
+                    .placeholder(R.mipmap.movieplaceholder_500x750)
+                    .into(movieAdapterViewHolder.listItemMovieView);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
 
     @Override
     public int getItemCount() {
-
         if (null == resArray){
           //  Log.i(TAG, " ** ** ** getItemCountbn null: 0");
             return 0;
         }
      //   Log.i(TAG, " ** ** ** getItemCount: "+resArray.length());
         return resArray.length();
-
     }
 
       /*
