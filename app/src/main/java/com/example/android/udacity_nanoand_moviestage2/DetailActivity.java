@@ -222,7 +222,10 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
 
         String imurl = "https://image.tmdb.org/t/p/w780" + moviePosterPath;
         if (posterImageView == null) posterImageView =  findViewById(R.id.poster_iv);
-        Picasso.with(context).load(imurl).into(posterImageView);
+        Picasso.with(context)
+                .load(imurl)
+                .placeholder(R.mipmap.ic_horizplaceholder_1000x500)
+                .into(posterImageView);
 
         if (favoritesToggle == null) favoritesToggle = findViewById(R.id.favorite_tb);//get favorite 'heart'
 
@@ -249,7 +252,7 @@ To fetch reviews request to the /movie/{id}/reviews endpoint
     }
 
     private void setupFavoriteButton() {
-        Log.d(TAG, "setupFavoriteButton: calling readFavoriteEntry");
+
         readFavoriteEntry();//use MovieID to retreive FavoriteEntry from db (if it exists)
 
         favoritesToggle.setChecked(favoriteEntryExists);
