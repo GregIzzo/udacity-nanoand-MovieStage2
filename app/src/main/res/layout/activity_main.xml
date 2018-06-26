@@ -22,28 +22,33 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-
-            android:background="@color/materialBlue"
+            android:button="@android:color/transparent"
+            android:background="@drawable/sort_button_background"
             android:text="@string/rb_toprated_text"
-            android:theme="@style/WhiteRadioButton" />
+            android:textAlignment="center"
+            />
 
         <RadioButton
             android:id="@+id/radButton2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/materialGreen"
+            android:button="@android:color/transparent"
+            android:background="@drawable/sort_button_background"
             android:text="@string/rb_popularity_text"
-            android:theme="@style/WhiteRadioButton" />
+            android:textAlignment="center"
+           />
 
         <RadioButton
             android:id="@+id/radButton3"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@color/materialYellow"
+            android:button="@android:color/transparent"
+            android:background="@drawable/sort_button_background"
             android:text="@string/rb_favorites_text"
-            android:theme="@style/WhiteRadioButton" />
+            android:textAlignment="center"
+            />
 
     </RadioGroup>
 
