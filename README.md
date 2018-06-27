@@ -2,7 +2,14 @@
 This is a project for the Udacity - Android Advanced Nanodegree
 
 # Project Overview
-Build on MovieStage1, adding the following functionality:
+This 'Popular Movie App' presents a scrollable grid of Movie posters (sorted by 'popularity', 'top rated' or 'user favorites'). Tap on a movie poster for a detail page showing:
+  * movie poster
+  * plot summary 
+  * rating
+  * popularity
+  * release date 
+  
+In this version (Stage 2) the following functionality is added:
   * List and play trailers for selected Movie in Detail view. Use YouTube App or in browser
   * View Reviews for selected Movie
   * Allow user to mark a Movie as a favorite
@@ -34,3 +41,16 @@ The Movie Database (TMDb) is a community built movie and TV database.
 http://square.github.io/picasso/
 
 A powerful image downloading and caching library for Android
+
+### VERY Helpful posts:
+  * How to get YouTube preview images: https://stackoverflow.com/questions/2068344/how-do-i-get-a-youtube-video-thumbnail-from-the-youtube-api
+  * Toggle Button for Favories: https://stackoverflow.com/questions/34980309/favourite-button-android
+  * Android vector drawables: https://developer.android.com/studio/write/vector-asset-studio
+  * AsyncTask and Loader frameworks -good! : https://google-developer-training.gitbooks.io/android-developer-fundamentals-course-concepts/content/en/Unit%203/71c_asynctask_and_asynctaskloader_md.html
+  * Android Intents:  https://developer.android.com/training/basics/intents/sending
+  * Material guide - helpful : https://material.io/design/layout/spacing-methods.html#baseline
+  * Adding a RatingBar :  https://www.mkyong.com/android/android-rating-bar-example/
+  * PopupWindow to show full review text: https://developer.android.com/reference/android/widget/PopupWindow
+  * Good post about styling radio buttons: https://stackoverflow.com/questions/19163628/adding-custom-radio-buttons-in-android
+
+
